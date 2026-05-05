@@ -45,7 +45,7 @@
 - Sürdürülebilir SaaS modeline geçiş
 
 ---
-##📘 Kullanım Kılavuzu
+## 📘 Kullanım Kılavuzu
 
 [Kılavuzu Görüntüle](src/kullanim-kilavuzu.pdf)
 
