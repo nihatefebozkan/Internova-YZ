@@ -46,7 +46,7 @@
 
 ---
 ##📘 Kullanım Kılavuzu
-[Kılavuzu Görüntüle](/kullanim-kilavuzu.pdf)
+[Kılavuzu Görüntüle](src/kullanim-kilavuzu.pdf)
 
 ## 🛍️ Ürün Kataloğu
 
