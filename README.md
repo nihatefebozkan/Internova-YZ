@@ -68,7 +68,7 @@
 | 8 | Bilgenur Çakır | 🔧 Backend Destek & API Dokümantasyon | Python, FastAPI, OpenAPI/Swagger, Pytest | Yardımcı tabloların oluşturulması, seed data, Swagger dokümantasyonu, middleware testleri |
 | 9 | Nihat Efe Bozkan | ✅ QA & Test Mühendisi | Pytest, Cypress, Selenium, manuel test | E2E test senaryoları, 3 rol için akış testleri, responsive testler, bug raporlama |
 
-> **Not:** İlerleyen sprintlerde takım üyelerinin sorumluluk alanları sprint hedeflerine göre güncellenmektedir. Detaylı sprint planımız için [Jira board'umuza](#) göz atabilirsiniz.
+> **Not:** İlerleyen sprintlerde takım üyelerinin sorumluluk alanları sprint hedeflerine göre güncellenmektedir.
 
 ---
 
@@ -161,11 +161,6 @@ Projemizi Scrum metodolojisi çerçevesinde yürütüyoruz. Her şey ölçülebi
 - **QA:** Test otomasyonu meraklıları
 - **Teknik Yazar:** Dokümantasyon ve içerik üretiminde destek
 
-### İletişim
-
-📧 **internovayz@gmail.com**  •  💬 [Discord sunucumuz](#)  •  🐦 [Twitter](#)
-
----
 
 ## 💰 Yatırımcı ve Bağışçılara Çağrı: Geleceğe Birlikte Yatırım Yapalım
 
