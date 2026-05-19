@@ -3,9 +3,9 @@
 // Dolduracak: Mustafa
 
 const jwt = require('jsonwebtoken');
-
+const User = require('../models/User');
 //Giriş kontrolü
-const protect = (req, res, next) => {
+const protect = async (req, res, next) => {
   // TODO: Authorization header'dan token al, doğrula, req.user'a ata
   let token;
 
@@ -18,11 +18,16 @@ const protect = (req, res, next) => {
   }
 
   try {
-    // .env içindeki JWT_SECRET ile token'ı doğrula
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // .env içindeki JWT_SECRET ile token'ı doğrula (veya yedek gizli anahtar kullan)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli_anahtar_degistir_internova_yz');
 
-    // Çözülen kullanıcı bilgisini (id, role vb.) isteğe ekle
-    req.user = decoded;
+    // Token içerisindeki ID ile veritabanından kullanıcıyı bul ve şifreyi dahil etme
+    req.user = await User.findById(decoded.id).select('-password');
+    
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Geçersiz token: Kullanıcı bulunamadı." });
+    }
+    
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: "Geçersiz token." });

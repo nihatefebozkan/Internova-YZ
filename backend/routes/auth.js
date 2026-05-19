@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-// const { register, login, logout } = require('../controllers/authController');
+const { register, login, logout } = require('../controllers/authController');
 
 // Kayıt ol
-router.post('/register', (req, res) => {});
+router.post('/register', register);
 
 // Giriş yap
-router.post('/login', (req, res) => {});
+router.post('/login', login);
 
 // Çıkış yap
-router.post('/logout', (req, res) => {});
+router.post('/logout', logout);
 
 module.exports = router;
