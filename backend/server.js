@@ -1,3 +1,9 @@
+/**
+ * ⚠️  LEGACY — Bu Node.js/MongoDB backend artık aktif değil.
+ *  Aktif backend: backend/app/ (Python/FastAPI, port 8002)
+ *  Bu dosya yalnızca referans amaçlı korunuyor.
+ *  MongoDB bağlantısı olmadığı için başlatılamaz.
+ */
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -8,7 +14,10 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes

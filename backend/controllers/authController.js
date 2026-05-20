@@ -3,7 +3,11 @@ const jwt = require('jsonwebtoken');
 
 // Token oluşturma fonksiyonu
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'gizli_anahtar_degistir_internova_yz', {
+  if (!process.env.JWT_SECRET) {
+    console.error('HATA: JWT_SECRET environment variable tanımlı değil');
+    process.exit(1);
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };

@@ -19,7 +19,11 @@ const protect = async (req, res, next) => {
 
   try {
     // .env içindeki JWT_SECRET ile token'ı doğrula (veya yedek gizli anahtar kullan)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli_anahtar_degistir_internova_yz');
+    if (!process.env.JWT_SECRET) {
+      console.error('HATA: JWT_SECRET environment variable tanımlı değil');
+      process.exit(1);
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Token içerisindeki ID ile veritabanından kullanıcıyı bul ve şifreyi dahil etme
     req.user = await User.findById(decoded.id).select('-password');

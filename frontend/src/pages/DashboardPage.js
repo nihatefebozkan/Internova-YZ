@@ -5,8 +5,8 @@ function DashboardPage() {
 
   return (
     <div className="dashboard-page">
-      <h2>Hoş geldin, {user?.name}!</h2>
-      <p>Rol: {user?.role === 'student' ? 'Öğrenci' : 'Şirket'}</p>
+      <h2>Hoş geldin, {[user?.ad, user?.soyad].filter(Boolean).join(' ')}!</h2>
+      <p>Rol: {user?.role === 'student' ? 'Öğrenci' : user?.role === 'teacher' ? 'Akademisyen' : 'Şirket'}</p>
       <div className="dashboard-grid">
         <div className="dashboard-card">
           <h3>Başvurularım</h3>

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 
 function InternshipCard({ internship }) {
-  const { _id, title, company, location, type, deadline } = internship;
+  const { id, _id, title, company, location, type, deadline } = internship;
+  const internshipId = id ?? _id;
 
   return (
     <div className="internship-card">
@@ -12,7 +13,7 @@ function InternshipCard({ internship }) {
       {deadline && (
         <p className="deadline">Son başvuru: {new Date(deadline).toLocaleDateString('tr-TR')}</p>
       )}
-      <Link to={`/internships/${_id}`} className="btn-primary">
+      <Link to={`/internships/${internshipId}`} className="btn-primary">
         İncele
       </Link>
     </div>

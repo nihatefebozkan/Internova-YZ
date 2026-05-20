@@ -14,7 +14,7 @@ export function UserProvider({ children }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!user?._id) return;
+    if (!user?.id) return;
     setLoading(true);
     getUserProfile(user._id)
       .then(setProfile)
@@ -23,7 +23,7 @@ export function UserProvider({ children }) {
   }, [user]);
 
   const refreshProfile = async () => {
-    if (!user?._id) return;
+    if (!user?.id) return;
     const data = await getUserProfile(user._id);
     setProfile(data);
   };

@@ -21,7 +21,7 @@ function LoginPage() {
       await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Giriş başarısız.');
+      setError(err.response?.data?.detail || err.response?.data?.message || 'Giriş başarısız.');
     } finally {
       setLoading(false);
     }

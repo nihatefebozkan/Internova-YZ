@@ -26,7 +26,7 @@ function RegisterPage() {
       await register(formData);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Kayıt başarısız.');
+      setError(err.response?.data?.detail || err.response?.data?.message || 'Kayıt başarısız.');
     } finally {
       setLoading(false);
     }
