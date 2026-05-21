@@ -1,0 +1,39 @@
+BURSA TEKNİK ÜNİVERSİTESİ ZORUNLU STAJ YÖNETMELİĞİ
+
+MADDE 1 - AMAÇ VE KAPSAM
+Bu yönetmelik, Bursa Teknik Üniversitesi lisans ve ön lisans programlarında kayıtlı öğrencilerin zorunlu staj uygulamalarına ilişkin usul ve esasları düzenlemektedir. Staj, öğrencilerin teorik bilgilerini pratik iş deneyimiyle pekiştirmelerini amaçlamaktadır.
+
+MADDE 2 - STAJ SÜRESİ
+Staj süresi bölümlere göre değişmekle birlikte asgari 30 iş günüdür. Bilgisayar Mühendisliği bölümü için zorunlu staj süresi 40 iş günüdür. Staj, tatil dönemlerinde yapılabileceği gibi akademik yıl içinde de gerçekleştirilebilir. Bir akademik yılda en fazla iki ayrı iş yerinde staj yapılabilir.
+
+MADDE 3 - STAJ YERİ KOŞULLARI
+Staj yapılacak işyerinin en az 5 çalışanı bulunmalıdır. İşyeri, öğrencinin bölümüyle ilgili faaliyet göstermelidir. Yurt dışı stajlar da kabul edilmektedir. İşyerinin SGK bildirimi yapıyor olması zorunludur. Kamu kurumlarında staj yapılabilir.
+
+MADDE 4 - STAJ BAŞVURU SÜRECİ
+Öğrenci, staj yapacağı işyerinden kabul belgesi almalıdır. Staj başlangıcından en az 15 gün önce bölüm staj komisyonuna başvurulmalıdır. Staj Başvuru Formu, İşyeri Kabul Belgesi ve öğrenci belgesi teslim edilmelidir. Komisyon onayı olmadan başlanan stajlar geçersiz sayılır.
+
+MADDE 5 - STAJ DEFTERİ
+Staj defteri, öğrenci tarafından her iş günü düzenli olarak doldurulmalıdır. Defterde yapılan işler, öğrenilen konular ve gözlemler yer almalıdır. Staj defteri, işyeri yetkilisi ve danışman öğretim üyesi tarafından onaylanmalıdır. Staj defteri A4 formatında, en az 50 sayfa olmalıdır. El yazısı veya bilgisayar çıktısı kabul edilmektedir. Staj defterinin elektronik kopyası da sisteme yüklenmelidir.
+
+MADDE 6 - STAJ RAPORU
+Staj tamamlandıktan sonra 15 gün içinde staj raporu teslim edilmelidir. Rapor, en az 20 sayfa olmalı; giriş, yapılan çalışmalar, sonuç ve değerlendirme bölümlerini içermelidir. Rapor Türkçe yazılmalı, teknik İngilizce terimler kullanılabilir. İşyeri gizlilik kuralları kapsamında bilgiler raporda gizlenebilir.
+
+MADDE 7 - STAJ DEĞERLENDİRME
+Staj değerlendirmesi; staj defteri (40 puan), staj raporu (30 puan) ve işyeri değerlendirmesi (30 puan) üzerinden yapılır. Toplam 60 ve üzeri puan alan öğrenciler stajı başarıyla tamamlamış sayılır. Başarısız olan öğrenciler bir sonraki dönemde stajı tekrarlamak zorundadır.
+
+MADDE 8 - STAJ SİGORTASI
+Staj süresince öğrenciler iş kazası ve meslek hastalığı sigortasından yararlanır. Sigorta primleri üniversite tarafından karşılanır. 5510 sayılı Kanun kapsamında öğrenciler sigortalı sayılır.
+
+MADDE 9 - DEVAMSIZLIK VE İZİN
+Staj süresince 3 günü aşan mazeretli devamsızlık telafi edilmelidir. Mazeret belgesi (doktor raporu, resmi yazı vb.) bölüme sunulmalıdır. İşyeri tatilleri staj süresinden sayılmaz.
+
+MADDE 10 - YURT DIŞI STAJ
+Erasmus+ programı kapsamında yurt dışı staj yapılabilir. Yurt dışı staj için bölüm onayı ve uluslararası ofis başvurusu gereklidir. Yurt dışında yapılan stajlar için staj defteri İngilizce tutulabilir. Yurt dışı stajları, yurt içi staj yerine sayılabilir.
+
+MADDE 11 - ÖZEL DURUMLAR
+Engelli öğrenciler için özel düzenlemeler yapılabilir. Çift anadal öğrencileri her bölümün staj koşullarını ayrı ayrı yerine getirmek zorundadır. Yatay geçiş öğrencilerinin önceki üniversitedeki stajları denklik komisyonunca değerlendirilebilir.
+
+STAJ KOMİSYONU İLETİŞİM
+Bölüm Staj Koordinatörü: Her dönem bölüm web sitesinde güncellenmektedir.
+Başvuru E-posta: staj@btu.edu.tr
+Staj Takip Sistemi: staj.btu.edu.tr

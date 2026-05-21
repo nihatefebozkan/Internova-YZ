@@ -1,10 +1,12 @@
-/* Öğrenci Paneli Stilleri */
-
-.student-dashboard {}
-.dashboard-header {}
-.dashboard-grid {}
-.career-map-widget {}
-.applications-widget {}
-.badges-widget {}
-.ai-suggestions-widget {}
-.mentor-bot-widget {}
+.student-dashboard   { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.dashboard-header    { margin-bottom: 1.75rem; }
+.dashboard-header h2 { font-size: 1.8rem; font-weight: 700; }
+.applications-list   { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+.application-item    { display: flex; align-items: center; justify-content: space-between;
+                       padding: .6rem .75rem; background: var(--gray-50);
+                       border-radius: var(--radius-sm); font-size: .9rem; }
+.application-item .pozisyon { font-weight: 500; }
+.durum-badge  { font-weight: 600; font-size: .82rem; }
+.profile-info { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; font-size: .9rem; }
+.profile-info p      { display: flex; gap: .5rem; }
+.profile-info strong { color: var(--gray-700); min-width: 100px; }

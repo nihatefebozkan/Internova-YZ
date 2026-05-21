@@ -1,7 +1,27 @@
-/* Ana Sayfa Stilleri */
-/* Dolduracak: Melike (Tailwind entegrasyonuna geçilene kadar geçici CSS) */
-
-.home-page {}
-.hero {}
-.features {}
-.cta {}
+.hero {
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 60%, #06B6D4 100%);
+  padding: 5rem 2rem; text-align: center; color: white;
+}
+.hero-content   { max-width: 680px; margin: 0 auto; }
+.hero h1        { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: white; margin-bottom: 1rem; }
+.hero-accent    { color: #A5F3FC; }
+.hero-subtitle  { font-size: 1.15rem; color: rgba(255,255,255,.85); margin-bottom: 2rem; }
+.hero-actions   { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+.hero-actions .btn-secondary { background: rgba(255,255,255,.15); color: white;
+                                border: 1.5px solid rgba(255,255,255,.4); }
+.hero-actions .btn-secondary:hover { background: rgba(255,255,255,.25); color: white; }
+.hero-stats     { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.hero-stats span { background: rgba(255,255,255,.15); padding: .4rem .9rem; border-radius: 99px; font-size: .9rem; }
+.features        { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; text-align: center; }
+.features h2     { font-size: 2rem; font-weight: 700; margin-bottom: 2.5rem; }
+.features-grid   { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+.feature-card    { background: white; border-radius: var(--radius-lg); padding: 2rem 1.5rem;
+                   border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);
+                   transition: box-shadow var(--transition), transform var(--transition); }
+.feature-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.feature-icon    { font-size: 2.5rem; margin-bottom: .75rem; display: block; }
+.feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
+.feature-card p  { font-size: .88rem; color: var(--gray-500); }
+.cta             { background: var(--primary-light); padding: 4rem 2rem; text-align: center; }
+.cta h2          { font-size: 1.8rem; margin-bottom: .75rem; }
+.cta p           { color: var(--gray-600); margin-bottom: 1.5rem; }

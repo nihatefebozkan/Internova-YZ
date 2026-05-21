@@ -11,7 +11,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import User
+from app.models import User, UserRole
 
 load_dotenv()
 
@@ -62,6 +62,18 @@ def _is_revoked(token: str) -> bool:
     if not REDIS_AVAILABLE:
         return False
     return bool(_redis.get(f"bl:{token}"))
+
+
+def require_role(*roles: UserRole):
+    """Endpoint'lere rol kısıtlaması ekleyen dependency factory."""
+    def dependency(current_user: User = Depends(get_current_user)) -> User:
+        if current_user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Bu işlem için yetki gerekiyor: {', '.join(r.value for r in roles)}",
+            )
+        return current_user
+    return dependency
 
 
 def get_current_user(

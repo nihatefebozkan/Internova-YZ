@@ -1,0 +1,120 @@
+# Staj ilanı endpoint'leri
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, selectinload
+
+from app.auth_utils import get_current_user, require_role
+from app.database import get_db
+from app.models import Application, Internship, InternshipStatus, User, UserRole
+from app.schemas import ApplicationCreate, ApplicationResponse, InternshipCreate, InternshipResponse, InternshipUpdate
+
+router = APIRouter(prefix="/internships", tags=["internships"])
+
+
+@router.get("", response_model=list[InternshipResponse])
+def list_internships(
+    skip: int = 0,
+    limit: int = Query(default=20, le=100),
+    durum: InternshipStatus = InternshipStatus.aktif,
+    search: str = Query(default=None),
+    db: Session = Depends(get_db),
+):
+    q = db.query(Internship).options(selectinload(Internship.company)).filter(
+        Internship.durum == durum
+    )
+    if search:
+        q = q.filter(
+            Internship.pozisyon.ilike(f"%{search}%") |
+            Internship.konum.ilike(f"%{search}%") |
+            Internship.aciklama.ilike(f"%{search}%")
+        )
+    return q.order_by(Internship.created_at.desc()).offset(skip).limit(limit).all()
+
+
+@router.post("", response_model=InternshipResponse, status_code=201)
+def create_internship(
+    body: InternshipCreate,
+    current_user: User = Depends(require_role(UserRole.company)),
+    db: Session = Depends(get_db),
+):
+    ilan = Internship(**body.model_dump(), company_id=current_user.id)
+    db.add(ilan)
+    db.commit()
+    db.refresh(ilan)
+    db.refresh(ilan, ["company"])
+    return ilan
+
+
+@router.get("/{internship_id}", response_model=InternshipResponse)
+def get_internship(
+    internship_id: int,
+    db: Session = Depends(get_db),
+):
+    ilan = db.query(Internship).options(selectinload(Internship.company)).filter(
+        Internship.id == internship_id
+    ).first()
+    if not ilan:
+        raise HTTPException(404, "İlan bulunamadı")
+    return ilan
+
+
+@router.put("/{internship_id}", response_model=InternshipResponse)
+def update_internship(
+    internship_id: int,
+    body: InternshipUpdate,
+    current_user: User = Depends(require_role(UserRole.company)),
+    db: Session = Depends(get_db),
+):
+    ilan = db.query(Internship).filter(Internship.id == internship_id).first()
+    if not ilan:
+        raise HTTPException(404, "İlan bulunamadı")
+    if ilan.company_id != current_user.id:
+        raise HTTPException(403, "Bu ilanı düzenleme yetkiniz yok")
+    for field, value in body.model_dump(exclude_none=True).items():
+        setattr(ilan, field, value)
+    db.commit()
+    db.refresh(ilan)
+    return ilan
+
+
+@router.delete("/{internship_id}", status_code=204)
+def delete_internship(
+    internship_id: int,
+    current_user: User = Depends(require_role(UserRole.company)),
+    db: Session = Depends(get_db),
+):
+    ilan = db.query(Internship).filter(Internship.id == internship_id).first()
+    if not ilan:
+        raise HTTPException(404, "İlan bulunamadı")
+    if ilan.company_id != current_user.id:
+        raise HTTPException(403, "Bu ilanı silme yetkiniz yok")
+    ilan.durum = InternshipStatus.kapali
+    db.commit()
+
+
+@router.post("/{internship_id}/apply", response_model=ApplicationResponse, status_code=201)
+def apply_internship(
+    internship_id: int,
+    body: ApplicationCreate,
+    current_user: User = Depends(require_role(UserRole.student)),
+    db: Session = Depends(get_db),
+):
+    ilan = db.query(Internship).filter(
+        Internship.id == internship_id, Internship.durum == InternshipStatus.aktif
+    ).first()
+    if not ilan:
+        raise HTTPException(404, "Aktif ilan bulunamadı")
+    mevcut = db.query(Application).filter(
+        Application.student_id == current_user.id,
+        Application.internship_id == internship_id,
+    ).first()
+    if mevcut:
+        raise HTTPException(400, "Bu ilana zaten başvurdunuz")
+    basvuru = Application(
+        student_id=current_user.id,
+        internship_id=internship_id,
+        on_yazi=body.on_yazi,
+    )
+    db.add(basvuru)
+    db.commit()
+    db.refresh(basvuru)
+    return basvuru

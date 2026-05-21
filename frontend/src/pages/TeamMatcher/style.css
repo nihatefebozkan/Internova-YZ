@@ -1,7 +1,21 @@
-/* Takım Eşleştirme Sayfası Stilleri */
-
-.team-matcher-page {}
-.project-selector {}
-.requirements-form {}
-.team-results {}
-.team-preview {}
+.team-matcher-page     { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.team-form             { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+.team-form h3          { margin-bottom: .25rem; }
+.team-grid             { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.25rem; }
+@media (max-width: 700px) { .team-grid { grid-template-columns: 1fr; } }
+.team-card             { margin-bottom: 0; }
+.team-header           { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+.team-header h4        { font-size: 1rem; font-weight: 600; }
+.team-size             { font-size: .82rem; color: var(--gray-400); }
+.team-card p           { font-size: .88rem; color: var(--gray-500); margin-bottom: .5rem; }
+.team-leader           { font-size: .82rem; color: var(--gray-500); margin-top: .25rem; }
+.team-actions          { display: flex; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
+.match-results h3      { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.match-item            { display: flex; align-items: center; gap: .75rem; padding: .6rem 0;
+                         border-bottom: 1px solid var(--gray-100); font-size: .9rem; flex-wrap: wrap; }
+.match-rank            { font-weight: 700; color: var(--gray-400); min-width: 24px; }
+.match-id              { font-weight: 500; min-width: 80px; }
+.match-bar-wrapper     { flex: 1; display: flex; align-items: center; gap: .5rem; min-width: 120px; }
+.match-bar             { height: 8px; background: linear-gradient(90deg, var(--primary), var(--accent));
+                         border-radius: 99px; min-width: 4px; }
+.match-pct             { font-size: .82rem; font-weight: 600; color: var(--primary); white-space: nowrap; }

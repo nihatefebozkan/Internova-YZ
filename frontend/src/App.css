@@ -1,38 +1,172 @@
-.App {
-  text-align: center;
-}
+/* ============================================================
+   LAYOUT — NAVBAR, MAIN, FOOTER
+   ============================================================ */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* ── Navbar ── */
+.navbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 60px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-sm);
 }
+.navbar-brand { display: flex; align-items: center; gap: .2rem; text-decoration: none; }
+.brand-text   { font-size: 1.2rem; font-weight: 700; color: var(--gray-900); }
+.brand-yz     { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+.navbar-links { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.nav-link     { padding: .4rem .75rem; border-radius: var(--radius-sm); font-size: .9rem;
+                color: var(--gray-600); transition: var(--transition); text-decoration: none; }
+.nav-link:hover { background: var(--gray-100); color: var(--gray-900); text-decoration: none; }
+.nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.nav-register { margin-left: .5rem; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+/* ── Main content ── */
+.main-content { min-height: calc(100vh - 60px - 56px); }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+/* ── Footer ── */
+.footer { background: var(--white); border-top: 1px solid var(--gray-200);
+          text-align: center; padding: 1rem; color: var(--gray-500); font-size: .85rem; }
 
-.App-link {
-  color: #61dafb;
+/* ============================================================
+   AUTH PAGES — Login / Register
+   ============================================================ */
+.auth-page {
+  min-height: calc(100vh - 116px);
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--gray-50) 100%);
+  padding: 2rem;
 }
+.auth-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg); padding: 2.5rem;
+  width: 100%; max-width: 420px;
+}
+.auth-card h2 { font-size: 1.6rem; margin-bottom: 1.5rem; color: var(--gray-900); }
+.auth-card form { display: flex; flex-direction: column; gap: .75rem; }
+.auth-card .btn-primary { width: 100%; justify-content: center; padding: .75rem; font-size: 1rem; }
+.auth-card p { margin-top: 1rem; text-align: center; font-size: .9rem; color: var(--gray-500); }
+.error-message { background: #FEE2E2; color: #991B1B; padding: .6rem .9rem;
+                  border-radius: var(--radius-sm); font-size: .9rem; margin-bottom: .5rem; }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ============================================================
+   DASHBOARD CARDS — Shared
+   ============================================================ */
+.dashboard-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200); padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
 }
+.dashboard-card h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin-bottom: 1rem; }
+.dashboard-grid  { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+.card-header     { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.badge-count     { background: var(--primary); color: var(--white); padding: .2rem .6rem;
+                   border-radius: 99px; font-size: .8rem; font-weight: 600; }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 1.5rem; display: flex; flex-direction: column;
+               align-items: center; gap: .75rem; }
+.empty-state p { color: var(--gray-500); }
+
+/* ── Quick links ── */
+.link-grid       { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+.quick-link-card {
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
+  padding: .75rem .5rem; border-radius: var(--radius); background: var(--gray-50);
+  border: 1px solid var(--gray-200); font-size: .8rem; color: var(--gray-700);
+  text-decoration: none; transition: var(--transition);
+}
+.quick-link-card .icon { font-size: 1.4rem; }
+.quick-link-card:hover { background: var(--primary-light); border-color: var(--primary);
+                          color: var(--primary); text-decoration: none; }
+
+/* ============================================================
+   INTERNSHIPS PAGE
+   ============================================================ */
+.internships-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.internships-page h2 { font-size: 1.6rem; margin-bottom: 1.25rem; }
+.search-input { max-width: 400px; margin-bottom: 1.5rem; }
+.internships-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+
+.internship-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200); padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: .5rem;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.internship-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.internship-card h3   { font-size: 1rem; font-weight: 600; }
+.internship-card .company-name { color: var(--primary); font-weight: 500; font-size: .9rem; }
+.internship-card .location     { color: var(--gray-500); font-size: .85rem; }
+.internship-card .badge        { background: var(--primary-light); color: var(--primary);
+                                  padding: .2rem .7rem; border-radius: 99px; font-size: .8rem;
+                                  font-weight: 600; align-self: flex-start; }
+.internship-card .deadline     { color: var(--gray-400); font-size: .8rem; margin-top: auto; }
+.internship-card .btn-primary  { margin-top: auto; align-self: flex-start; }
+
+/* ============================================================
+   COMPANIES PAGE
+   ============================================================ */
+.companies-page    { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.companies-page h2 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+.companies-grid    { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+.company-card      { background: var(--white); border-radius: var(--radius-lg);
+                     border: 1px solid var(--gray-200); padding: 1.5rem;
+                     box-shadow: var(--shadow-sm); }
+.company-card h3   { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
+
+/* ============================================================
+   PROFILE PAGE
+   ============================================================ */
+.profile-page       { max-width: 640px; margin: 0 auto; padding: 2rem; }
+.profile-page h2    { font-size: 1.6rem; margin-bottom: 1.5rem; }
+.tab-buttons        { display: flex; gap: .5rem; margin-bottom: 1.5rem; }
+.tab                { padding: .5rem 1.2rem; border: 1.5px solid var(--gray-200);
+                      background: var(--white); border-radius: var(--radius-sm);
+                      font-size: .9rem; font-weight: 500; cursor: pointer; color: var(--gray-600); }
+.tab.active         { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.profile-form, .cv-form { display: flex; flex-direction: column; }
+.profile-form .btn-primary, .cv-form .btn-primary { align-self: flex-start; margin-top: .5rem; }
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.loading-container { display: flex; align-items: center; justify-content: center;
+                     min-height: 200px; color: var(--gray-400); }
+
+/* ============================================================
+   CHATBOT
+   ============================================================ */
+.chatbot-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000; }
+.chatbot-toggle  { width: 52px; height: 52px; border-radius: 50%; background: var(--primary);
+                   color: white; font-size: 1.4rem; border: none; cursor: pointer;
+                   box-shadow: var(--shadow-lg); transition: var(--transition);
+                   display: flex; align-items: center; justify-content: center; }
+.chatbot-toggle:hover { background: var(--primary-dark); transform: scale(1.05); }
+.chatbot-window  { position: absolute; bottom: 64px; right: 0; width: 340px; max-height: 480px;
+                   background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+                   border: 1px solid var(--gray-200); display: flex; flex-direction: column; overflow: hidden; }
+.chatbot-header  { background: var(--primary); color: white; padding: .75rem 1rem; font-weight: 600; font-size: .9rem; }
+.chatbot-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .6rem; }
+.message         { padding: .6rem .9rem; border-radius: var(--radius); font-size: .88rem; max-width: 88%; line-height: 1.5; }
+.message-user    { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.message-assistant { background: var(--gray-100); color: var(--gray-800); align-self: flex-start; border-bottom-left-radius: 4px; }
+.quick-questions { padding: .5rem .75rem; display: flex; flex-wrap: wrap; gap: .4rem; border-top: 1px solid var(--gray-200); }
+.quick-btn       { background: var(--primary-light); color: var(--primary); border: none; cursor: pointer;
+                   padding: .3rem .7rem; border-radius: 99px; font-size: .78rem; font-weight: 500; }
+.chatbot-input   { display: flex; gap: .5rem; padding: .75rem; border-top: 1px solid var(--gray-200); }
+.chatbot-input input { font-size: .88rem; }
+.chatbot-input button { padding: .5rem .9rem; flex-shrink: 0; background: var(--primary); color: white;
+                         border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 1rem; }
+.chatbot-input button:disabled { opacity: .4; }
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.loading-spinner { display: flex; align-items: center; justify-content: center;
+                   padding: 3rem; color: var(--gray-400); font-size: .95rem; gap: .5rem; }
+.loading-spinner::before { content: ""; width: 20px; height: 20px;
+                            border: 2.5px solid var(--gray-200); border-top-color: var(--primary);
+                            border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

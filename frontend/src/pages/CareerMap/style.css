@@ -1,7 +1,21 @@
-/* Kariyer Yol Haritası Stilleri */
-
-.career-map-page {}
-.target-selector {}
-.radar-section {}
-.gap-analysis {}
-.roadmap-timeline {}
+.career-map-page     { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+.career-map-page h2  { font-size: 1.6rem; margin-bottom: .25rem; }
+.career-grid         { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+@media (max-width: 768px) { .career-grid { grid-template-columns: 1fr; } }
+.radar-section, .gap-section { min-height: 420px; }
+.role-selector       { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
+.role-selector label { font-size: .9rem; font-weight: 500; margin: 0; flex-direction: row; align-items: center; }
+.role-selector select { max-width: 220px; }
+.progress-bar-wrapper { margin-bottom: 1.25rem; }
+.progress-label  { display: flex; justify-content: space-between; font-size: .9rem; margin-bottom: .4rem; }
+.progress-bar    { background: var(--gray-200); border-radius: 99px; height: 10px; overflow: hidden; }
+.progress-fill   { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));
+                   border-radius: 99px; transition: width .5s ease; }
+.gap-columns     { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.gap-col h4      { font-size: .85rem; font-weight: 600; color: var(--gray-700); margin-bottom: .5rem; }
+.gap-col ul      { list-style: none; display: flex; flex-direction: column; gap: .35rem; }
+.skill-have      { font-size: .85rem; color: var(--success); display: flex; align-items: center; gap: .3rem; }
+.skill-have::before { content: "✓"; font-weight: 700; }
+.skill-missing   { font-size: .85rem; color: var(--gray-700); display: flex; align-items: center; justify-content: space-between; }
+.learn-link      { font-size: .78rem; color: var(--primary); white-space: nowrap; }
+.empty-state     { padding: 2rem; text-align: center; }

@@ -1,7 +1,37 @@
-/* Rozetler Sayfası Stilleri */
-
-.badges-page {}
-.xp-overview {}
-.badge-collection {}
-.leaderboard {}
-.central-calendar {}
+.badges-page     { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+.badges-page h2  { font-size: 1.6rem; margin-bottom: 1.5rem; }
+.xp-overview     { margin-bottom: 1.5rem; }
+.xp-stats        { display: flex; gap: 2rem; margin-bottom: 1rem; }
+.xp-item         { text-align: center; }
+.xp-value        { display: block; font-size: 2rem; font-weight: 700; color: var(--primary); }
+.xp-label        { font-size: .82rem; color: var(--gray-500); }
+.xp-bar-wrapper  { }
+.xp-bar          { background: var(--gray-200); border-radius: 99px; height: 10px; overflow: hidden; margin-bottom: .3rem; }
+.xp-fill         { height: 100%; background: linear-gradient(90deg, #F59E0B, #EF4444); border-radius: 99px; }
+.xp-next         { font-size: .82rem; color: var(--gray-500); }
+.badge-collection { margin-bottom: 2rem; }
+.badge-collection h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
+.badges-grid     { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+.badge-card      { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius-lg);
+                   padding: 1.25rem; text-align: center; transition: var(--transition); }
+.badge-card.earned { border-color: #F59E0B; background: #FFFBEB; }
+.badge-card.locked { opacity: .55; }
+.badge-card:hover.earned { box-shadow: 0 4px 16px rgba(245,158,11,.25); transform: translateY(-2px); }
+.badge-icon      { font-size: 2.2rem; margin-bottom: .5rem; display: block; }
+.badge-icon img  { width: 48px; height: 48px; object-fit: contain; }
+.badge-name      { font-size: .88rem; font-weight: 600; margin-bottom: .25rem; }
+.badge-desc      { font-size: .78rem; color: var(--gray-500); }
+.badge-date      { font-size: .75rem; color: var(--gray-400); margin-top: .3rem; }
+.locked-label    { font-size: .75rem; color: var(--gray-400); margin-top: .3rem; }
+.events-section  { }
+.event-card      { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem;
+                   background: var(--gray-50); border-radius: var(--radius); margin-bottom: .75rem;
+                   border: 1px solid var(--gray-200); flex-wrap: wrap; }
+.event-info      { flex: 1; }
+.event-info h4   { font-size: .95rem; font-weight: 600; margin-bottom: .25rem; }
+.event-meta      { font-size: .82rem; color: var(--gray-500); }
+.event-kategori  { display: inline-block; margin-top: .3rem; background: var(--primary-light);
+                   color: var(--primary); padding: .15rem .5rem; border-radius: 99px; font-size: .75rem; font-weight: 600; }
+.event-qr        { flex-shrink: 0; }
+.qrcode-wrapper  { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+.qrcode-label    { font-size: .75rem; color: var(--gray-500); }

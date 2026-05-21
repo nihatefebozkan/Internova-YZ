@@ -1,3 +1,46 @@
+# Bağımlılıklar
 node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Gizli bilgiler — KESİNLİKLE commit etme
 .env
+.env.*
+!.env.example
+
+# Python derleme
+*.egg-info/
+dist/
+build/
+*.so
+
+# Veritabanı
+*.db
+*.sqlite3
+
+# Log dosyaları
 *.log
+logs/
+
+# OS dosyaları
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Test & Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# React build
+frontend/build/
+
+# Playwright browser
+/home/*/.cache/ms-playwright/

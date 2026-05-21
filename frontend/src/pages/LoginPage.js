@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const ROLE_ROUTES = {
+  student: '/student-dashboard',
+  teacher: '/academic-dashboard',
+  company: '/company-dashboard',
+};
+
 function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,8 +24,8 @@ function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login(formData.email, formData.password);
-      navigate('/dashboard');
+      const data = await login(formData.email, formData.password);
+      navigate(ROLE_ROUTES[data?.user?.role] || '/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || err.response?.data?.message || 'Giriş başarısız.');
     } finally {

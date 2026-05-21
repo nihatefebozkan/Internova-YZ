@@ -23,13 +23,12 @@ function CompaniesPage() {
       {error && <p className="error-message">{error}</p>}
       <div className="companies-grid">
         {companies.map((company) => (
-          <div key={company._id} className="company-card">
-            <h3>{company.name}</h3>
-            <p>{company.sector}</p>
-            <Link to={`/companies/${company._id}`}>Detay</Link>
+          <div key={company.id} className="company-card">
+            <h3>{company.ad} {company.soyad}</h3>
+            <Link to={`/companies/${company.id}`}>Detay</Link>
           </div>
         ))}
-        {companies.length === 0 && <p>Şirket bulunamadı.</p>}
+        {companies.length === 0 && !error && <p>Şirket bulunamadı.</p>}
       </div>
     </div>
   );

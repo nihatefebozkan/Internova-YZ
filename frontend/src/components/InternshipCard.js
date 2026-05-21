@@ -1,19 +1,22 @@
 import { Link } from 'react-router-dom';
 
 function InternshipCard({ internship }) {
-  const { id, _id, title, company, location, type, deadline } = internship;
-  const internshipId = id ?? _id;
+  const { id, pozisyon, konum, ucret_var_mi, basvuru_son_tarih, company } = internship;
 
   return (
     <div className="internship-card">
-      <h3>{title}</h3>
-      <p className="company-name">{company?.name || company}</p>
-      <p className="location">{location}</p>
-      <span className="badge">{type}</span>
-      {deadline && (
-        <p className="deadline">Son başvuru: {new Date(deadline).toLocaleDateString('tr-TR')}</p>
+      <h3>{pozisyon}</h3>
+      <p className="company-name">
+        {company ? `${company.ad} ${company.soyad}` : ''}
+      </p>
+      <p className="location">{konum}</p>
+      <span className="badge">{ucret_var_mi ? 'Ücretli' : 'Ücretsiz'}</span>
+      {basvuru_son_tarih && (
+        <p className="deadline">
+          Son başvuru: {new Date(basvuru_son_tarih).toLocaleDateString('tr-TR')}
+        </p>
       )}
-      <Link to={`/internships/${internshipId}`} className="btn-primary">
+      <Link to={`/internships/${id}`} className="btn-primary">
         İncele
       </Link>
     </div>

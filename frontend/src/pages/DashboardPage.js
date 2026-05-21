@@ -1,28 +1,25 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+const ROLE_ROUTES = {
+  student: '/student-dashboard',
+  teacher: '/academic-dashboard',
+  company: '/company-dashboard',
+};
 
 function DashboardPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  return (
-    <div className="dashboard-page">
-      <h2>Hoş geldin, {[user?.ad, user?.soyad].filter(Boolean).join(' ')}!</h2>
-      <p>Rol: {user?.role === 'student' ? 'Öğrenci' : user?.role === 'teacher' ? 'Akademisyen' : 'Şirket'}</p>
-      <div className="dashboard-grid">
-        <div className="dashboard-card">
-          <h3>Başvurularım</h3>
-          <p>Aktif başvurularını buradan takip edebilirsin.</p>
-        </div>
-        <div className="dashboard-card">
-          <h3>YZ Önerileri</h3>
-          <p>Profiline göre kişiselleştirilmiş staj önerileri.</p>
-        </div>
-        <div className="dashboard-card">
-          <h3>Profil</h3>
-          <p>Profilini güncel tut, daha iyi eşleşmeler al.</p>
-        </div>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    if (!loading && user?.role) {
+      navigate(ROLE_ROUTES[user.role] || '/', { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  return <LoadingSpinner />;
 }
 
 export default DashboardPage;
