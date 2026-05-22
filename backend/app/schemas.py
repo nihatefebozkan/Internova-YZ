@@ -16,6 +16,7 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     role: UserRole = UserRole.student
+    bolum_kodu: Optional[str] = None  # öğrenci için zorunlu, diğer roller için opsiyonel
 
     @field_validator("password")
     @classmethod
@@ -49,6 +50,7 @@ class UserResponse(BaseModel):
     soyad: str
     role: UserRole
     bolum: Optional[str] = None
+    bolum_kodu: Optional[str] = None
     ogrenci_no: Optional[str] = None
     telefon: Optional[str] = None
     profil_foto_url: Optional[str] = None
@@ -70,7 +72,7 @@ class AuthResponse(BaseModel):
 class UserProfileUpdate(BaseModel):
     ad: Optional[str] = None
     soyad: Optional[str] = None
-    bolum: Optional[str] = None
+    # bolum ve bolum_kodu kayıt sırasında seçilir, sonradan değiştirilemez
     ogrenci_no: Optional[str] = None
     telefon: Optional[str] = None
     profil_foto_url: Optional[str] = None
@@ -79,6 +81,19 @@ class UserProfileUpdate(BaseModel):
 # ---------------------------------------------------------------------------
 # Staj ilanları
 # ---------------------------------------------------------------------------
+
+# Varsayılan beceri profili — tüm kategoriler 0
+VARSAYILAN_BECERI_PROFILI = {
+    "Yazılım Dilleri":    0,
+    "Web Teknolojileri":  0,
+    "Veritabanı":         0,
+    "DevOps & Araçlar":   0,
+    "Veri & YZ":          0,
+    "Gömülü & Donanım":   0,
+    "Yabancı Dil":        0,
+    "Yönetim & İletişim": 0,
+}
+
 
 class InternshipCreate(BaseModel):
     pozisyon: str
@@ -92,6 +107,8 @@ class InternshipCreate(BaseModel):
     staj_bitis: Optional[date] = None
     ucret_var_mi: bool = False
     durum: InternshipStatus = InternshipStatus.taslak
+    bolum_kodu: Optional[str] = None      # hangi bölüme yönelik
+    beceri_profili: Optional[dict] = None  # {kategori: 0-100}
 
 
 class InternshipUpdate(BaseModel):
@@ -106,6 +123,8 @@ class InternshipUpdate(BaseModel):
     staj_bitis: Optional[date] = None
     ucret_var_mi: Optional[bool] = None
     durum: Optional[InternshipStatus] = None
+    bolum_kodu: Optional[str] = None
+    beceri_profili: Optional[dict] = None
 
 
 class InternshipResponse(BaseModel):
@@ -122,6 +141,8 @@ class InternshipResponse(BaseModel):
     staj_bitis: Optional[date] = None
     ucret_var_mi: bool
     durum: InternshipStatus
+    bolum_kodu: Optional[str] = None
+    beceri_profili: Optional[dict] = None
     created_at: datetime
     company: Optional[UserResponse] = None
 
@@ -209,8 +230,12 @@ class PortfolioResponse(BaseModel):
     aciklama: Optional[str] = None
     github_link: Optional[str] = None
     demo_link: Optional[str] = None
-    teknolojiler: Optional[list] = None
-    gorseller: Optional[list] = None
+    teknolojiler:      Optional[list]  = None
+    proje_buyuklugu:   Optional[int]   = None
+    konu:              Optional[str]   = None
+    teknik_yetkinlik:  Optional[float] = None
+    beceriler:         Optional[float] = None
+    gorseller:         Optional[list]  = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

@@ -17,6 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 
 // Yeni sayfalar (stub → doldurulacak)
 import Home from './pages/Home';
+import InternshipDetail from './pages/InternshipDetail';
 import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import AcademicDashboard from './pages/AcademicDashboard';
@@ -40,6 +41,7 @@ function AppRoutes() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/internships" element={<InternshipsPage />} />
+          <Route path="/internships/:id" element={<InternshipDetail />} />
           <Route path="/companies" element={<CompaniesPage />} />
 
           {/* Dashboard — role bazlı yönlendirme */}

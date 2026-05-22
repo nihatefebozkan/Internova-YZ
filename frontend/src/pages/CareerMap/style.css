@@ -19,3 +19,30 @@
 .skill-missing   { font-size: .85rem; color: var(--gray-700); display: flex; align-items: center; justify-content: space-between; }
 .learn-link      { font-size: .78rem; color: var(--primary); white-space: nowrap; }
 .empty-state     { padding: 2rem; text-align: center; }
+
+/* ── Katkı Detayları ── */
+.katki-detay        { margin-top: 1.5rem; }
+.katki-detay h3     { font-size: 1rem; font-weight: 600; margin-bottom: 1.25rem; }
+.katki-grid         { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+
+.katki-karti        { background: var(--gray-50); border-radius: var(--radius);
+                      padding: .9rem 1rem; border: 1px solid var(--gray-200); }
+.katki-baslik       { display: flex; justify-content: space-between; align-items: center;
+                      margin-bottom: .75rem; padding-bottom: .5rem; border-bottom: 1.5px solid var(--gray-200); }
+.katki-kat          { font-size: .88rem; font-weight: 600; color: var(--gray-800); }
+.katki-toplam       { font-size: .88rem; font-weight: 700; color: var(--primary); }
+
+.katki-liste        { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+
+.katki-satir        { display: flex; flex-direction: column; gap: .25rem; }
+.katki-satir-baslik { font-size: .82rem; color: var(--gray-700); }
+.katki-satir-baslik strong { color: var(--gray-900); }
+.katki-sag          { color: var(--gray-500); }
+
+.katki-alt          { display: flex; align-items: center; gap: .5rem; }
+.katki-bar-bg       { flex: 1; height: 5px; background: var(--gray-200);
+                      border-radius: 99px; overflow: hidden; }
+.katki-bar          { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));
+                      border-radius: 99px; transition: width .4s ease; }
+.katki-etki         { font-size: .75rem; font-weight: 600; color: var(--primary);
+                      white-space: nowrap; min-width: 28px; text-align: right; }

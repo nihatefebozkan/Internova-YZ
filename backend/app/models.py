@@ -74,7 +74,8 @@ class User(Base):
     role = Column(Enum(UserRole), nullable=False, default=UserRole.student)
     ad = Column(String(100), nullable=False)
     soyad = Column(String(100), nullable=False)
-    bolum = Column(String(200))
+    bolum = Column(String(200))          # görünen bölüm adı (serbest metin)
+    bolum_kodu = Column(String(50))      # standart bölüm kodu (bilgisayar, makine, ...)
     ogrenci_no = Column(String(50))
     telefon = Column(String(20))
     profil_foto_url = Column(String(500))
@@ -118,6 +119,8 @@ class Internship(Base):
     staj_bitis = Column(Date)
     ucret_var_mi = Column(Boolean, default=False, nullable=False)
     durum = Column(Enum(InternshipStatus), default=InternshipStatus.taslak, nullable=False)
+    bolum_kodu     = Column(String(50))  # hangi bölüme yönelik ilan
+    beceri_profili = Column(JSONB)       # {kategori: 0-100} — bölümün kategorilerine göre
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     company = relationship("User", back_populates="internships")
@@ -201,7 +204,12 @@ class Portfolio(Base):
     aciklama = Column(Text)
     github_link = Column(String(500))
     demo_link = Column(String(500))
-    teknolojiler = Column(JSONB)
+    teknolojiler        = Column(JSONB)          # ["Python", "React", ...]
+    proje_buyuklugu     = Column(Integer, default=0)
+    konu                = Column(String(500))
+    teknik_yetkinlik    = Column(Float, default=0.0)
+    beceriler           = Column(Float, default=0.0)
+    analiz_durumu       = Column(String(20), default="bekliyor")  # bekliyor/basarili/api_hatasi
     gorseller = Column(JSONB)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 

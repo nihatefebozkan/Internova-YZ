@@ -36,7 +36,20 @@ def create_internship(
     current_user: User = Depends(require_role(UserRole.company)),
     db: Session = Depends(get_db),
 ):
-    ilan = Internship(**body.model_dump(), company_id=current_user.id)
+    from app.data.career_data import BOLUM_KATEGORILERI, BOLUMLER
+    data = body.model_dump()
+
+    # Bölüm kodu geçerli mi?
+    bolum_kodu = data.get("bolum_kodu")
+    if bolum_kodu and bolum_kodu not in BOLUMLER:
+        raise HTTPException(400, f"Geçersiz bölüm kodu: {bolum_kodu}")
+
+    # beceri_profili gönderilmemişse bölüme göre sıfır profil oluştur
+    if not data.get("beceri_profili"):
+        kategoriler = BOLUM_KATEGORILERI.get(bolum_kodu, []) if bolum_kodu else []
+        data["beceri_profili"] = {k: 0 for k in kategoriler} if kategoriler else {}
+
+    ilan = Internship(**data, company_id=current_user.id)
     db.add(ilan)
     db.commit()
     db.refresh(ilan)

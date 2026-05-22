@@ -1,146 +1,52 @@
-.portfolio-page    { max-width: 900px; margin: 0 auto; padding: 2rem; }
-.portfolio-page h2 { font-size: 1.6rem; margin-bottom: 1.5rem; }
-.portfolio-section { margin-bottom: 2.5rem; }
-.section-header    { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-.section-header h3 { font-size: 1.15rem; font-weight: 600; }
-.project-form  { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
-                 padding: 1.5rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
-.project-card  { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
-                 padding: 1.25rem; box-shadow: var(--shadow-sm); }
-.project-card h4   { font-size: 1rem; font-weight: 600; margin-bottom: .4rem; }
-.project-card p    { font-size: .88rem; color: var(--gray-500); margin-bottom: .6rem; }
-.card-actions  { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; align-items: center; }
-.card-actions a { font-size: .82rem; color: var(--primary); border: 1px solid var(--primary-light);
-                  padding: .2rem .6rem; border-radius: 99px; }
-.cert-form     { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1rem; background: var(--gray-50);
-                 padding: 1rem; border-radius: var(--radius); border: 1px dashed var(--gray-300); }
-.cert-form input, .cert-form button { flex: 1; min-width: 150px; }
-.ocr-form      { border-color: var(--primary); background: var(--primary-light); }
-.form-label    { font-size: .85rem; font-weight: 600; color: var(--primary); margin-bottom: .25rem; width: 100%; }
-.cert-list     { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
-.cert-item     { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
-                 padding: .75rem 1rem; background: var(--white); border: 1px solid var(--gray-200);
-                 border-radius: var(--radius-sm); }
-.ocr-detail    { font-size: .82rem; color: var(--gray-600); margin-top: .4rem; cursor: pointer; }
-.ocr-detail pre { white-space: pre-wrap; background: var(--gray-50); padding: .5rem;
-                  border-radius: var(--radius-sm); margin-top: .3rem; font-size: .78rem; }
+.portfolio-page      { max-width: 1000px; margin: 0 auto; padding: 2rem; }
 
-/* ── Kurum Seçici ── */
-.sertifika-form      { background: var(--white); border: 1.5px solid var(--primary-light);
-                       border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem;
-                       display: flex; flex-direction: column; gap: .85rem; }
-.sertifika-form h4   { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin-bottom: .25rem; }
-.kurum-secici        { display: flex; gap: .6rem; flex-wrap: wrap; }
-.kurum-btn           { display: flex; flex-direction: column; align-items: center; gap: .25rem;
-                       padding: .65rem 1rem; border: 2px solid var(--gray-200);
-                       border-radius: var(--radius); background: var(--gray-50);
-                       cursor: pointer; font-size: .85rem; font-weight: 500; color: var(--gray-600);
-                       transition: var(--transition); min-width: 90px; }
-.kurum-btn .kurum-ikon { font-size: 1.4rem; }
-.kurum-btn.aktif     { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
-.kurum-btn:hover:not(.aktif) { border-color: var(--gray-400); background: var(--gray-100); }
-
-/* ── BTK ID ── */
-.btk-id-wrapper      { display: flex; flex-direction: column; gap: .35rem; }
-.field-hint          { font-size: .8rem; color: var(--gray-500); margin: 0; }
-
-/* ── Dosya ── */
-.dosya-wrapper       { display: flex; flex-direction: column; gap: .4rem; }
-.dosya-label         { display: flex; flex-direction: column; gap: .4rem; font-size: .9rem;
-                       font-weight: 500; color: var(--gray-700); cursor: pointer; }
-.dosya-label input[type="file"] { font-size: .85rem; }
-.dosya-secildi       { font-size: .85rem; color: var(--primary); font-weight: 500; }
-
-/* ── Sertifika Kartı ── */
-.cert-list           { display: flex; flex-direction: column; gap: .75rem; }
-.cert-card           { background: var(--white); border: 1.5px solid var(--gray-200);
-                       border-radius: var(--radius-lg); padding: 1.1rem 1.25rem;
-                       transition: var(--transition); }
-.cert-card.dogrulanmis { border-color: var(--success); }
-.cert-card-header    { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.cert-card-info      { display: flex; flex-direction: column; gap: .2rem; }
-.cert-ad             { font-size: .95rem; font-weight: 600; }
-.cert-kurum          { font-size: .82rem; color: var(--gray-500); }
-.cert-tarih          { font-size: .78rem; color: var(--gray-400); }
-.dogru-badge         { background: #D1FAE5; color: #065F46; padding: .3rem .75rem;
-                       border-radius: 99px; font-size: .82rem; font-weight: 600;
-                       display: flex; align-items: center; gap: .3rem; white-space: nowrap; }
-.red-badge           { background: #FEF3C7; color: #92400E; padding: .3rem .75rem;
-                       border-radius: 99px; font-size: .82rem; font-weight: 600;
-                       display: flex; align-items: center; gap: .3rem; white-space: nowrap; }
-.skor                { opacity: .7; font-size: .75rem; }
-.ocr-detay           { margin-top: .75rem; }
-.ocr-detay summary   { font-size: .82rem; color: var(--gray-500); cursor: pointer; }
-.ocr-metin           { white-space: pre-wrap; font-size: .78rem; background: var(--gray-50);
-                       padding: .75rem; border-radius: var(--radius-sm); margin-top: .4rem;
-                       max-height: 180px; overflow-y: auto; color: var(--gray-600); }
-.cert-card-actions   { display: flex; justify-content: flex-end; margin-top: .6rem; }
-
-/* ── Yeni Sertifika Yükleme ── */
-.sertifika-yukle     { background: var(--white); border: 1.5px solid var(--primary-light);
-                       border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
-.dosya-yukle-alan    { display: flex; flex-direction: column; gap: .75rem; }
-.dosya-drop-zone     { display: flex; flex-direction: column; align-items: center; gap: .5rem;
-                       padding: 2rem; border: 2px dashed var(--gray-300); border-radius: var(--radius-lg);
-                       cursor: pointer; transition: var(--transition); }
-.dosya-drop-zone:hover { border-color: var(--primary); background: var(--primary-light); }
-.drop-ikon           { font-size: 2rem; }
-.drop-text           { font-size: .9rem; color: var(--gray-500); }
-.dosya-bilgi         { display: flex; justify-content: space-between; align-items: center;
-                       font-size: .88rem; color: var(--primary); font-weight: 500;
-                       background: var(--primary-light); padding: .5rem .75rem; border-radius: var(--radius-sm); }
-.dosya-boyut         { color: var(--gray-400); font-size: .8rem; }
-.yukle-btn           { align-self: flex-start; }
-
-/* ── Yükleniyor durumu ── */
-.yukle-durum         { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem; }
-.yukle-spinner       { width: 40px; height: 40px; border: 3px solid var(--gray-200);
+/* ── Proje Ekle Formu ── */
+.proje-ekle-form     { margin-bottom: 1.5rem; }
+.proje-ekle-form h3  { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.github-input-row    { display: flex; gap: .75rem; }
+.github-url-input    { flex: 1; font-family: monospace; font-size: .92rem; }
+.yukle-durum         { display: flex; flex-direction: column; align-items: center;
+                       gap: .75rem; padding: 1.5rem; }
+.yukle-spinner       { width: 36px; height: 36px; border: 3px solid var(--gray-200);
                        border-top-color: var(--primary); border-radius: 50%;
                        animation: spin .7s linear infinite; }
 
-/* ── Sonuç kartı ── */
-.sonuc-karti         { border: 1px solid var(--gray-200); border-radius: var(--radius-lg);
-                       overflow: hidden; margin-bottom: 1rem; }
-.sonuc-baslik        { display: flex; align-items: center; justify-content: space-between;
-                       padding: .75rem 1.25rem; font-weight: 600; font-size: .95rem; }
-.sonuc-baslik.basarili  { background: #D1FAE5; color: #065F46; }
-.sonuc-baslik.basarisiz { background: #FEF3C7; color: #92400E; }
-.sonuc-skor          { font-size: .82rem; opacity: .8; }
-.ocr-satir           { display: flex; gap: 1rem; align-items: baseline;
-                       padding: .4rem 1.25rem; font-size: .88rem; border-top: 1px solid var(--gray-100); }
-.ocr-satir span:first-child { color: var(--gray-400); min-width: 55px; font-size: .8rem; }
-.ocr-satir strong    { color: var(--gray-800); }
-.btk-detay           { display: flex; flex-direction: column; gap: .2rem; padding: .75rem 1.25rem;
-                       background: var(--primary-light); font-size: .82rem; border-top: 1px solid var(--gray-200); }
-.btk-label           { font-weight: 600; color: var(--primary); }
-
-/* ── Manuel ID bar ── */
-.manuel-bar          { }
-.manuel-input-alan   { background: #FFF7ED; border: 1.5px solid #F59E0B;
-                       border-radius: var(--radius-lg); padding: 1.25rem; }
-.manuel-aciklama     { font-size: .9rem; color: var(--gray-700); margin-bottom: .75rem; }
-.manuel-row          { display: flex; gap: .75rem; align-items: center; }
-.manuel-input        { flex: 1; font-family: monospace; letter-spacing: .05em; }
-.manuel-vazgec       { margin-top: .75rem; font-size: .82rem; }
+/* ── Proje Kartı ── */
+.projects-grid       { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.project-card        { background: var(--white); border: 1px solid var(--gray-200);
+                       border-radius: var(--radius-lg); padding: 1.25rem;
+                       box-shadow: var(--shadow-sm); display: flex;
+                       flex-direction: column; gap: .5rem; }
+.proje-baslik        { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.proje-baslik h4     { font-size: 1rem; font-weight: 600; margin: 0; }
+.github-link-badge   { font-size: .78rem; color: var(--primary); border: 1px solid var(--primary-light);
+                       padding: .15rem .5rem; border-radius: 99px; white-space: nowrap; }
+.proje-aciklama      { font-size: .88rem; color: var(--gray-500); line-height: 1.5; }
+.card-actions        { display: flex; justify-content: flex-end; margin-top: auto; }
 
 /* ── Sertifika Formu ── */
-.sertifika-form      { background: var(--white); border: 1.5px solid var(--gray-200);
-                       border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem;
-                       display: flex; flex-direction: column; gap: .75rem; }
+.sertifika-form      { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: .75rem; }
+.sertifika-form h3   { font-size: 1rem; font-weight: 600; }
 .kurum-secici        { display: flex; gap: .75rem; }
-.kurum-btn           { flex: 1; padding: .65rem 1rem; border: 2px solid var(--gray-200);
+.kurum-btn           { flex: 1; padding: .6rem 1rem; border: 2px solid var(--gray-200);
                        border-radius: var(--radius); background: var(--gray-50);
-                       cursor: pointer; font-size: .9rem; font-weight: 500;
-                       color: var(--gray-600); transition: var(--transition); }
+                       cursor: pointer; font-size: .88rem; font-weight: 500; color: var(--gray-600); transition: var(--transition); }
 .kurum-btn.aktif     { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
-.kurum-btn:hover:not(.aktif) { border-color: var(--gray-400); }
 .dosya-label         { display: flex; align-items: center; gap: .5rem; padding: .65rem .9rem;
                        border: 1.5px dashed var(--gray-300); border-radius: var(--radius-sm);
-                       cursor: pointer; font-size: .9rem; color: var(--gray-500);
-                       transition: var(--transition); }
+                       cursor: pointer; font-size: .9rem; color: var(--gray-500); transition: var(--transition); }
 .dosya-label:hover   { border-color: var(--primary); color: var(--primary); }
 .form-actions        { display: flex; gap: .75rem; }
+.manuel-bar          { background: #FFF7ED; border: 1.5px solid #F59E0B;
+                       border-radius: var(--radius-lg); padding: 1.25rem;
+                       display: flex; flex-direction: column; gap: .75rem; }
+.manuel-uyari        { font-weight: 600; color: #92400E; font-size: .9rem; }
+.ocr-onizleme        { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .85rem;
+                       color: var(--gray-600); padding: .5rem .75rem;
+                       background: var(--white); border-radius: var(--radius-sm); border: 1px solid var(--gray-200); }
+.manuel-aciklama     { font-size: .88rem; color: var(--gray-600); }
+.manuel-row          { display: flex; gap: .75rem; }
+.manuel-input        { flex: 1; font-family: monospace; letter-spacing: .04em; }
 
 /* ── Sertifika Kartı ── */
 .cert-list           { display: flex; flex-direction: column; gap: .6rem; }
@@ -151,34 +57,26 @@
 .cert-card-info      { display: flex; flex-direction: column; gap: .15rem; }
 .cert-ad             { font-size: .95rem; font-weight: 600; }
 .cert-kurum          { font-size: .82rem; color: var(--gray-500); }
-.dogru-badge         { background: #D1FAE5; color: #065F46; padding: .25rem .7rem;
-                       border-radius: 99px; font-size: .82rem; font-weight: 600; }
-.red-badge           { background: var(--gray-100); color: var(--gray-500); padding: .25rem .7rem;
-                       border-radius: 99px; font-size: .82rem; }
+.dogru-badge         { background: #D1FAE5; color: #065F46; padding: .25rem .7rem; border-radius: 99px; font-size: .82rem; font-weight: 600; }
+.red-badge           { background: var(--gray-100); color: var(--gray-500); padding: .25rem .7rem; border-radius: 99px; font-size: .82rem; }
+.cert-meta           { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: .5rem;
+                       padding: .5rem .75rem; background: #F0FDF4; border-radius: var(--radius-sm); font-size: .85rem; color: #166534; }
+.cert-red-neden      { font-size: .82rem; color: var(--danger); margin-top: .3rem; }
 .cert-card-actions   { display: flex; justify-content: flex-end; margin-top: .6rem; }
+.portfolio-section   { }
 
-/* ── Yükleniyor ── */
-.yukle-durum   { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 1.5rem; }
-.yukle-spinner { width: 36px; height: 36px; border: 3px solid var(--gray-200);
-                 border-top-color: var(--primary); border-radius: 50%;
-                 animation: spin .7s linear infinite; }
+/* ── Proje konu badge ── */
+.proje-konu-badge { display: inline-block; background: var(--primary-light); color: var(--primary);
+                    font-size: .78rem; font-weight: 600; padding: .2rem .6rem;
+                    border-radius: 99px; margin-bottom: .4rem; }
 
-/* ── Manuel ID barı ── */
-.manuel-bar        { background: #FFF7ED; border: 1.5px solid #F59E0B;
-                     border-radius: var(--radius-lg); padding: 1.25rem;
-                     display: flex; flex-direction: column; gap: .75rem; }
-.manuel-uyari      { font-weight: 600; color: #92400E; font-size: .9rem; }
-.manuel-aciklama   { font-size: .88rem; color: var(--gray-600); }
-.ocr-onizleme      { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .85rem;
-                     color: var(--gray-600); padding: .5rem .75rem;
-                     background: var(--white); border-radius: var(--radius-sm);
-                     border: 1px solid var(--gray-200); }
-.manuel-row        { display: flex; gap: .75rem; }
-.manuel-input      { flex: 1; font-family: monospace; letter-spacing: .04em; }
-
-/* ── Sertifika meta bilgileri ── */
-.cert-meta { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: .6rem;
-             padding: .6rem .75rem; background: #F0FDF4;
-             border-radius: var(--radius-sm); font-size: .85rem; color: #166534; }
-.cert-neden { margin-top: .6rem; padding: .5rem .75rem; background: #FEF9C3;
-              border-radius: var(--radius-sm); font-size: .85rem; color: #92400E; }
+/* ── Analiz metrikleri ── */
+.proje-metrikler  { display: flex; flex-direction: column; gap: .35rem; margin-top: .75rem;
+                    padding: .75rem; background: var(--gray-50); border-radius: var(--radius-sm); }
+.metrik-satir     { display: flex; align-items: center; gap: .5rem; }
+.metrik-label     { font-size: .75rem; color: var(--gray-500); min-width: 110px; }
+.metrik-deger     { font-size: .75rem; font-weight: 700; color: var(--primary);
+                    min-width: 32px; text-align: right; }
+.mini-bar-bg      { flex: 1; height: 5px; background: var(--gray-200);
+                    border-radius: 99px; overflow: hidden; }
+.mini-bar-fill    { height: 100%; border-radius: 99px; transition: width .4s ease; }

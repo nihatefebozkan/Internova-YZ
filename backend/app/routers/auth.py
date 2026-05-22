@@ -12,7 +12,7 @@ from app.auth_utils import (
 )
 from app.database import get_db
 from app.limiter import limiter
-from app.models import User
+from app.models import User, UserRole
 from app.schemas import AuthResponse, LoginRequest, RegisterRequest, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -22,11 +22,21 @@ bearer_scheme = HTTPBearer()
 @router.post("/register", response_model=AuthResponse, status_code=201)
 @limiter.limit("10/minute")
 def register(request: Request, body: RegisterRequest, db: Session = Depends(get_db)):
+    from app.data.career_data import BOLUMLER
+
     if db.query(User).filter(User.email == body.email).first():
         raise HTTPException(status_code=400, detail="Bu e-posta zaten kayıtlı")
 
+    # Öğrenci bölüm seçimi zorunlu
+    if body.role == UserRole.student and not body.bolum_kodu:
+        raise HTTPException(status_code=400, detail="Öğrenci kaydı için bölüm seçimi zorunludur")
+
+    # bolum_kodu geçerli mi?
+    if body.bolum_kodu and body.bolum_kodu not in BOLUMLER:
+        raise HTTPException(status_code=400, detail="Geçersiz bölüm kodu")
+
     parts = body.name.strip().split(" ", 1)
-    ad = parts[0]
+    ad    = parts[0]
     soyad = parts[1] if len(parts) > 1 else "-"
 
     user = User(
@@ -35,6 +45,8 @@ def register(request: Request, body: RegisterRequest, db: Session = Depends(get_
         role=body.role,
         ad=ad,
         soyad=soyad,
+        bolum_kodu=body.bolum_kodu,
+        bolum=BOLUMLER.get(body.bolum_kodu, "") if body.bolum_kodu else "",
         email_dogrulandi=False,
         aktif=True,
     )
