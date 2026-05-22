@@ -372,3 +372,23 @@ class TeamApplication(Base):
 
     team = relationship("ProjectTeam", back_populates="applications")
     applicant = relationship("User", back_populates="team_applications")
+
+
+# ---------------------------------------------------------------------------
+# roadmaps — AI tarafından üretilen kariyer yol haritaları
+# ---------------------------------------------------------------------------
+
+class Roadmap(Base):
+    __tablename__ = "roadmaps"
+
+    id             = Column(Integer, primary_key=True, index=True)
+    student_id     = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    internship_id  = Column(Integer, ForeignKey("internships.id", ondelete="SET NULL"), nullable=True, index=True)
+    sirket_adi     = Column(String(300))   # ilan sahibi şirketin adı
+    departman      = Column(String(200))   # seçilen departman
+    bolum_kodu     = Column(String(50))    # ilanın hedef bölümü
+    icerik         = Column(Text)          # AI'nın ürettiği yol haritası
+    created_at     = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    student    = relationship("User", foreign_keys=[student_id])
+    internship = relationship("Internship", foreign_keys=[internship_id])

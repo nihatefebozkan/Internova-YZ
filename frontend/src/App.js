@@ -2,11 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { useAuth } from './context/AuthContext';
-import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import ChatBot from './components/ChatBot';
-
 // Çalışan sayfalar
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -17,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 
 // Yeni sayfalar (stub → doldurulacak)
 import Home from './pages/Home';
+import CareerAssistant from './pages/CareerAssistant';
 import InternshipDetail from './pages/InternshipDetail';
 import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
@@ -32,8 +30,6 @@ import './App.css';
 function AppRoutes() {
   return (
     <>
-      <Navbar />
-      <ChatBot />
       <main className="main-content">
         <Routes>
           {/* Public */}
@@ -58,6 +54,7 @@ function AppRoutes() {
           <Route path="/badges" element={<ProtectedRoute><Badges /></ProtectedRoute>} />
           <Route path="/internship-book" element={<ProtectedRoute><InternshipBook /></ProtectedRoute>} />
           <Route path="/team-matcher" element={<ProtectedRoute><TeamMatcher /></ProtectedRoute>} />
+          <Route path="/career-assistant" element={<ProtectedRoute><CareerAssistant /></ProtectedRoute>} />
 
           {/* Profil */}
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

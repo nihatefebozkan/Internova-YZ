@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
+import btkIcon from "../assets/BTK_icon.jpg";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -22,6 +23,16 @@ function ProfilePage() {
   const [newSkill, setNewSkill] = useState({ name: "", progress: 50 });
   const [githubUrl, setGithubUrl] = useState("");
   const [analizYukleniyor, setAnalizYukleniyor] = useState(false);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+
+  // Sertifika modal state
+  const [certKurum,    setCertKurum]    = useState("btk");
+  const [certDosya,    setCertDosya]    = useState(null);
+  const [certDurum,    setCertDurum]    = useState("bosta"); // bosta|yukleniyor|manuel|tamam
+  const [certSonuc,    setCertSonuc]    = useState(null);
+  const [certManuelNo, setCertManuelNo] = useState("");
+  const [certManuelYukl, setCertManuelYukl] = useState(false);
+  const [certHata,     setCertHata]     = useState("");
 
   const ROLE_ROUTE = { student: "/student-dashboard", teacher: "/academic-dashboard", company: "/company-dashboard" };
 
@@ -42,6 +53,7 @@ function ProfilePage() {
 
   const handleProfileSave = async (e) => {
     e.preventDefault();
+    if (!user?.id) { alert("Kullanıcı bilgisi yüklenemedi."); return; }
     try {
       await api.put(`/users/${user.id}`, { ad: tempProfile.ad, soyad: tempProfile.soyad, telefon: tempProfile.telefon, ogrenci_no: tempProfile.ogrenci_no });
       setProfile({ ...tempProfile }); setIsEditingProfile(false);
@@ -68,6 +80,43 @@ function ProfilePage() {
   const handleDeleteCert = async (id) => {
     await api.delete(`/certificates/${id}`).catch(() => {});
     setCertificates(prev => prev.filter(c => c.id !== id));
+  };
+
+  const resetCertModal = () => {
+    setCertDosya(null); setCertDurum("bosta"); setCertSonuc(null);
+    setCertManuelNo(""); setCertHata(""); setIsCertModalOpen(false);
+  };
+
+  const handleCertYukle = async () => {
+    if (!certDosya) { setCertHata("Lütfen dosya seçin."); return; }
+    setCertDurum("yukleniyor"); setCertHata("");
+    const fd = new FormData();
+    fd.append("dosya", certDosya);
+    try {
+      const res = await api.post(`/certificates/upload?veren_kurum=${certKurum}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+      setCertSonuc(res.data);
+      if (res.data.manuel_gerekli) {
+        setCertDurum("manuel");
+      } else {
+        // Tam veriyi (ad + ocr_metin dahil) API'den çek
+        api.get("/certificates/me").then(r => setCertificates(r.data)).catch(() => {});
+        resetCertModal();
+      }
+    } catch (err) { setCertHata(err.response?.data?.detail || "Yükleme başarısız."); setCertDurum("bosta"); }
+  };
+
+  const handleCertManuel = async () => {
+    if (!certManuelNo.trim()) { setCertHata("ID boş olamaz."); return; }
+    setCertManuelYukl(true); setCertHata("");
+    try {
+      const res = await api.post("/certificates/verify-manual", { sertifika_id: certSonuc.id, cert_no: certManuelNo.trim() });
+      if (res.data.id_hatali) { setCertHata("❌ Bu ID ile BTK sisteminde sertifika bulunamadı."); }
+      else {
+        api.get("/certificates/me").then(r => setCertificates(r.data)).catch(() => {});
+        resetCertModal();
+      }
+    } catch { setCertHata("Doğrulama başarısız."); }
+    finally { setCertManuelYukl(false); }
   };
 
   const handleAddSkill = (e) => {
@@ -176,31 +225,59 @@ function ProfilePage() {
                       <h3 className="text-xs font-bold text-gray-900">Sertifikalarım</h3>
                       <p className="text-[11px] text-gray-400 font-medium mt-0.5">Yükle ve onaylanmasını bekle</p>
                     </div>
-                    <button onClick={() => navigate("/portfolio")} className="bg-black text-white px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer">+ Sertifika Ekle</button>
+                    <button onClick={() => { setCertDurum("bosta"); setCertHata(""); setIsCertModalOpen(true); }} className="bg-black text-white px-3.5 py-2 rounded-xl text-xs font-bold cursor-pointer">+ Sertifika Ekle</button>
                   </div>
                   {certificates.length === 0 ? (
                     <div className="text-center py-10 text-gray-300 text-sm">Henüz sertifika eklenmemiş.</div>
                   ) : (
                     <div className="flex flex-col gap-3 mt-1">
-                      {certificates.map(cert => (
-                        <div key={cert.id} className="p-4 border border-gray-50 bg-white rounded-xl flex flex-col gap-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-emerald-600 text-base">✓</span>
-                              <div>
-                                <h4 className="text-xs font-bold text-gray-900">{cert.ad}</h4>
-                                <p className="text-[10px] text-gray-400 font-medium mt-0.5">{cert.veren_kurum || "—"}</p>
+                      {certificates.map(cert => {
+                        const metaMap = {};
+                        (cert.ocr_metin||'').split(/\\n|\n/).forEach(s => {
+                          const i = s.indexOf(':');
+                          if (i > 0) metaMap[s.slice(0,i).trim()] = s.slice(i+1).trim();
+                        });
+                        const meta = { isim: metaMap['isim']||'', tarih: metaMap['tarih']||'', cert_no: metaMap['cert_no']||'' };
+                        const neden = (cert.ocr_metin||'').match(/neden:(.+)/)?.[1]?.trim();
+                        return (
+                          <div key={cert.id} className="p-4 border border-gray-50 bg-white rounded-xl flex flex-col gap-2">
+                            {/* İkon + kurs adı + sil */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                {cert.veren_kurum === 'btk' && cert.dogrulanmis && (
+                                  <img src={btkIcon} alt="BTK" className="h-7 w-7 rounded object-contain" />
+                                )}
+                                {cert.veren_kurum === 'btk' && !cert.dogrulanmis && (
+                                  <span className="text-red-500 font-bold text-base">✕</span>
+                                )}
+                                <h4 className="text-sm font-bold text-gray-900">{cert.ad}</h4>
                               </div>
+                              <button onClick={() => handleDeleteCert(cert.id)} className="text-[11px] font-bold text-red-400 hover:text-red-600">Sil</button>
                             </div>
-                            <div className="flex items-center gap-3">
-                              <span className={`px-2 py-0.5 text-[9px] font-bold border rounded-md ${cert.dogrulanmis ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-amber-50 text-amber-600 border-amber-100"}`}>
-                                {cert.dogrulanmis ? "Onaylandı" : "Bekliyor"}
-                              </span>
-                              <button onClick={() => handleDeleteCert(cert.id)} className="text-[11px] font-bold text-red-500 hover:underline">Sil</button>
-                            </div>
+
+                            {/* Doğrulandı → yeşil bar */}
+                            {cert.dogrulanmis && (
+                              <div className="flex flex-wrap gap-3 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2 text-[10px] font-semibold text-emerald-700">
+                                <span>👤 {meta.isim || cert.ad || '—'}</span>
+                                {meta.tarih   && <span>📅 {meta.tarih}</span>}
+                                {meta.cert_no && <span>🔢 {meta.cert_no}</span>}
+                              </div>
+                            )}
+
+                            {/* Onaylanmadı → kırmızı bar */}
+                            {!cert.dogrulanmis && (
+                              <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2 text-[10px] font-semibold text-red-700">
+                                {neden
+                                  ? <>❌ Eşleşmeyen: <strong>{neden}</strong></>
+                                  : cert.veren_kurum === 'diger'
+                                    ? <span>⏳ Doğrulama yapılmadı</span>
+                                    : <span>❌ BTK doğrulaması başarısız</span>
+                                }
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </>
@@ -348,6 +425,94 @@ function ProfilePage() {
                 Yetenek Listesine Ekle
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* SERTİFİKA MODAL */}
+      {isCertModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md flex flex-col gap-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Sertifika Ekle</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Kurum seç ve dosyayı yükle</p>
+              </div>
+              <button onClick={resetCertModal} className="text-gray-400 hover:text-gray-600 cursor-pointer">✕</button>
+            </div>
+
+            {/* Kurum seçici */}
+            <div className="flex rounded-xl bg-gray-100 p-1 gap-1">
+              {[{v:"btk",l:"🏛️ BTK Akademi"},{v:"diger",l:"📄 Diğer"}].map(k => (
+                <button key={k.v} type="button"
+                  onClick={() => { setCertKurum(k.v); setCertDosya(null); setCertDurum("bosta"); setCertHata(""); }}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${certKurum === k.v ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+                  {k.l}
+                </button>
+              ))}
+            </div>
+
+            {/* Dosya seç */}
+            {certDurum === "bosta" && (
+              <>
+                <label className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-gray-400 transition-all bg-gray-50 hover:bg-white">
+                  <span className="text-2xl">{certDosya ? "📎" : "📄"}</span>
+                  <span className="text-xs font-semibold text-gray-600">
+                    {certDosya ? certDosya.name : certKurum === "btk" ? "PDF seç (BTK sertifikası)" : "PNG, JPG veya PDF seç"}
+                  </span>
+                  <span className="text-[10px] text-gray-400">{certDosya ? `${(certDosya.size/1024).toFixed(0)} KB` : "Dosya seçmek için tıkla"}</span>
+                  <input type="file"
+                    accept={certKurum === "btk" ? "application/pdf" : "image/png,image/jpeg,image/jpg,application/pdf"}
+                    style={{ display: "none" }}
+                    onChange={e => { setCertDosya(e.target.files[0]); setCertHata(""); }} />
+                </label>
+                {certHata && <p className="text-xs text-red-500 font-medium -mt-2">{certHata}</p>}
+                <div className="flex gap-3">
+                  <button onClick={handleCertYukle} disabled={!certDosya}
+                    className="flex-1 bg-gray-950 text-white py-3 rounded-xl text-xs font-bold hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                    {certKurum === "btk" ? "Yükle & Doğrula" : "Ekle"}
+                  </button>
+                  <button onClick={resetCertModal} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-xl text-xs font-bold hover:bg-gray-50 transition-all cursor-pointer">İptal</button>
+                </div>
+              </>
+            )}
+
+            {/* Yükleniyor */}
+            {certDurum === "yukleniyor" && (
+              <div className="flex flex-col items-center gap-3 py-6">
+                <div className="h-8 w-8 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+                <p className="text-xs text-gray-500 font-medium">{certKurum === "btk" ? "PDF okunuyor, BTK kontrol ediliyor..." : "Kaydediliyor..."}</p>
+              </div>
+            )}
+
+            {/* Manuel ID */}
+            {certDurum === "manuel" && (
+              <div className="flex flex-col gap-4">
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                  <p className="text-xs font-bold text-amber-800">⚠️ BTK sisteminde sertifika numarası bulunamadı.</p>
+                  {certSonuc?.ocr && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {certSonuc.ocr.isim  && <span className="text-[10px] text-amber-700">👤 {certSonuc.ocr.isim}</span>}
+                      {certSonuc.ocr.kurs  && <span className="text-[10px] text-amber-700">📚 {certSonuc.ocr.kurs}</span>}
+                      {certSonuc.ocr.tarih && <span className="text-[10px] text-amber-700">📅 {certSonuc.ocr.tarih}</span>}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-bold text-gray-700">Sertifikanın sağ üst köşesindeki ID:</label>
+                  <input className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="örn: 6mqF06j6vL" value={certManuelNo} onChange={e => setCertManuelNo(e.target.value)} />
+                </div>
+                {certHata && <p className="text-xs text-red-500 font-medium">{certHata}</p>}
+                <div className="flex gap-3">
+                  <button onClick={handleCertManuel} disabled={certManuelYukl}
+                    className="flex-1 bg-gray-950 text-white py-3 rounded-xl text-xs font-bold hover:bg-gray-800 disabled:opacity-50 cursor-pointer">
+                    {certManuelYukl ? "Kontrol ediliyor..." : "🔐 BTK'da Doğrula"}
+                  </button>
+                  <button onClick={resetCertModal} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-xl text-xs font-bold hover:bg-gray-50 cursor-pointer">Vazgeç</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

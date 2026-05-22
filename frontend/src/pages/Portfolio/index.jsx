@@ -1,6 +1,7 @@
 // Portfolyo — GitHub repo analizi + Sertifika doğrulama
 import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
+import btkIcon from '../../assets/BTK_icon.jpg';
 import './style.css';
 
 // ── Proje Ekleme Formu ───────────────────────────────────────────
@@ -245,41 +246,65 @@ function SertifikaForm({ onEklendi, onIptal }) {
 // ── Sertifika Kartı ──────────────────────────────────────────────
 function parseMeta(ocr_metin) {
   if (!ocr_metin) return {};
-  const al = (alan) => { const m = ocr_metin.match(new RegExp(`^${alan}:(.+)$`, 'm')); return m ? m[1].trim() : ''; };
-  return { cert_no: al('cert_no'), isim: al('isim'), tarih: al('tarih') };
+  const map = {};
+  // \n veya \\n her iki formatı da destekle
+  const satirlar = ocr_metin.split(/\\n|\n/);
+  satirlar.forEach(satir => {
+    const idx = satir.indexOf(':');
+    if (idx > 0) {
+      const key = satir.slice(0, idx).trim();
+      const val = satir.slice(idx + 1).trim();
+      if (val) map[key] = val;
+    }
+  });
+  return {
+    cert_no: map['cert_no'] || '',
+    isim:    map['isim']    || '',
+    tarih:   map['tarih']  || '',
+    kurs:    map['kurs']   || '',
+  };
 }
 
 function SertifikaKarti({ cert, onSil }) {
-  const kurum = cert.veren_kurum === 'btk' ? '🏛️ BTK Akademi' : '📄 Diğer';
-  const meta  = cert.veren_kurum === 'btk' ? parseMeta(cert.ocr_metin) : {};
+  const meta  = parseMeta(cert.ocr_metin);
+  const neden = cert.ocr_metin?.match(/neden:(.+)/)?.[1]?.trim();
+
   return (
-    <div className={`cert-card ${cert.dogrulanmis ? 'dogrulanmis' : ''}`}>
+    <div className="cert-card">
       <div className="cert-card-header">
-        <div className="cert-card-info">
-          <strong className="cert-ad">{cert.ad}</strong>
-          <span className="cert-kurum">{kurum}</span>
+        {/* Sol: ikon + kurs adı */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+          {cert.veren_kurum === 'btk' && cert.dogrulanmis
+            ? <img src={btkIcon} alt="BTK" style={{ height: '28px', width: '28px', objectFit: 'contain', borderRadius: '4px' }} />
+            : cert.veren_kurum === 'btk'
+              ? <span style={{ fontSize: '1.2rem' }}>✕</span>
+              : null
+          }
+          <strong className="cert-ad-bold">{cert.ad}</strong>
         </div>
-        <div className="cert-card-durum">
-          {cert.dogrulanmis
-            ? <span className="dogru-badge">✅ Doğrulandı</span>
-            : <span className="red-badge">⏳ Doğrulanmadı</span>}
-        </div>
-      </div>
-      {cert.dogrulanmis && cert.veren_kurum === 'btk' && (
-        <div className="cert-meta">
-          {meta.isim    && <span>👤 {meta.isim}</span>}
-          {meta.cert_no && <span>🔢 {meta.cert_no}</span>}
-          {meta.tarih   && <span>📅 {meta.tarih}</span>}
-        </div>
-      )}
-      {!cert.dogrulanmis && cert.ocr_metin?.includes('neden:') && (
-        <p className="cert-red-neden">
-          {cert.ocr_metin.match(/neden:(.+)/)?.[1]?.trim()}
-        </p>
-      )}
-      <div className="cert-card-actions">
         <button className="btn-delete" onClick={() => onSil(cert.id)}>Sil</button>
       </div>
+
+      {/* Doğrulandı → yeşil bar */}
+      {cert.dogrulanmis && (
+        <div className="cert-bar cert-bar-yesil">
+          <span>👤 {meta.isim  || cert.ad || '—'}</span>
+          {meta.tarih   && <span>📅 {meta.tarih}</span>}
+          {meta.cert_no && <span>🔢 {meta.cert_no}</span>}
+        </div>
+      )}
+
+      {/* Onaylanmadı → kırmızı bar */}
+      {!cert.dogrulanmis && (
+        <div className="cert-bar cert-bar-kirmizi">
+          {neden
+            ? <span>❌ Eşleşmeyen: {neden}</span>
+            : cert.veren_kurum === 'diger'
+              ? <span>⏳ Doğrulama yapılmadı</span>
+              : <span>❌ BTK doğrulaması başarısız</span>
+          }
+        </div>
+      )}
     </div>
   );
 }
@@ -309,11 +334,13 @@ function Portfolio() {
     setTimeout(() => setMsg(''), 5000);
   };
 
-  const certEklendi = () => {
+  const certEklendi = (sonuc) => {
+    // Listeyi API'den taze çek (doğrulama durumu dahil)
     api.get('/certificates/me').then(r => setCertificates(r.data)).catch(() => {});
     setShowCertForm(false);
-    setMsg('Sertifika eklendi.');
-    setTimeout(() => setMsg(''), 3000);
+    const durum = sonuc?.dogrulanmis ? '✅ Sertifika doğrulandı!' : '⚠️ Sertifika eklendi (doğrulanamadı).';
+    setMsg(durum);
+    setTimeout(() => setMsg(''), 4000);
   };
 
   if (loading) return <div className="loading-spinner" style={{ margin: '4rem auto' }} />;

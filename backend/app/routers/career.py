@@ -7,7 +7,7 @@ from app.data.career_data import (
     BOLUMLER, BOLUM_KATEGORILERI, BOLUM_ROL_MAP,
 )
 from app.database import get_db
-from app.models import CV, Certificate, Portfolio, User, UserRole
+from app.models import CV, Certificate, Internship, Portfolio, Roadmap, User, UserRole
 
 router = APIRouter(prefix="/career", tags=["career"])
 
@@ -305,3 +305,182 @@ Kurallar:
             "sertifikalar":        sertifika_isimleri,
         },
     }
+
+
+# ─────────────────────────────────────────────────────────────────
+# Yol Haritası endpoint'leri
+# ─────────────────────────────────────────────────────────────────
+
+@router.get("/roadmap/ilanlar")
+def roadmap_ilanlar(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.student)),
+):
+    """Aktif staj ilanlarını şirket + departman bilgisiyle döner (yol haritası için seçim)."""
+    from sqlalchemy.orm import selectinload
+    ilanlar = (
+        db.query(Internship)
+        .options(selectinload(Internship.company))
+        .filter(Internship.durum == "aktif")
+        .order_by(Internship.created_at.desc())
+        .limit(50)
+        .all()
+    )
+    return [
+        {
+            "id":          i.id,
+            "pozisyon":    i.pozisyon,
+            "departman":   i.departman or "",
+            "konum":       i.konum or "",
+            "bolum_kodu":  i.bolum_kodu or "",
+            "sirket_adi":  f"{i.company.ad} {i.company.soyad}".strip() if i.company else "",
+            "beceri_profili": i.beceri_profili or {},
+        }
+        for i in ilanlar
+    ]
+
+
+@router.post("/roadmap/olustur")
+async def roadmap_olustur(
+    internship_id: int,
+    current_user: User = Depends(require_role(UserRole.student)),
+    db: Session = Depends(get_db),
+):
+    """
+    Seçilen staj ilanına göre AI yol haritası üretir ve DB'ye kaydeder.
+    """
+    from sqlalchemy.orm import selectinload
+    from app.services.llm_service import GEMINI_API_KEY
+    from app.data.career_data import BOLUM_KATEGORILERI, BOLUMLER
+
+    # İlanı çek
+    ilan = db.query(Internship).options(selectinload(Internship.company)).filter(
+        Internship.id == internship_id
+    ).first()
+    if not ilan:
+        from fastapi import HTTPException
+        raise HTTPException(404, "İlan bulunamadı")
+
+    sirket_adi = f"{ilan.company.ad} {ilan.company.soyad}".strip() if ilan.company else "Şirket"
+
+    # Öğrencinin mevcut becerileri
+    cv = db.query(CV).filter(CV.student_id == current_user.id).first()
+    mevcut_beceriler = cv.beceriler or [] if cv else []
+    bolum_adi = BOLUMLER.get(ilan.bolum_kodu or "", "")
+
+    # İlanın aradığı beceri profili
+    aranan_profil = ilan.beceri_profili or {}
+    aranan_kategoriler = BOLUM_KATEGORILERI.get(ilan.bolum_kodu or "", [])
+
+    # AI Prompt
+    prompt = f"""Bir BTU ogrencisi icin kariyer yol haritasi olustur.
+
+Hedef sirket: {sirket_adi}
+Hedef departman: {ilan.departman or ilan.pozisyon}
+Hedef bolum: {bolum_adi or ilan.bolum_kodu or "Belirsiz"}
+
+Sirkein aradigi beceri kategorileri ve puanlari:
+{chr(10).join(f"- {k}: {aranan_profil.get(k, 0)}/100" for k in aranan_kategoriler if aranan_profil.get(k, 0) > 0) or "Belirtilmemis"}
+
+Ogrencinin mevcut becerileri:
+{', '.join(mevcut_beceriler) if mevcut_beceriler else 'Henuz belirtilmemis'}
+
+Lutfen asagidakileri iceren kisa ve net bir Turkce yol haritasi olustur:
+1. Eksik beceriler ve oncelik sirasi
+2. Her beceri icin somut ogrenme adimi (kurs, proje, sertifika)
+3. 3 ve 6 aylik hedefler
+4. Bu staja hazirlanmak icin tavsiyeler
+
+Madde madde yaz, kisa ve uygulanabilir olsun."""
+
+    # AI çağrısı (Gemini → Groq → OpenAI)
+    icerik = ""
+    try:
+        import os
+        groq_key = os.getenv("GROQ_API_KEY", "").strip()
+        gemini_key = GEMINI_API_KEY
+
+        if gemini_key:
+            try:
+                from google import genai
+                client = genai.Client(api_key=gemini_key)
+                r = client.models.generate_content(model="models/gemini-2.5-flash-lite", contents=prompt)
+                icerik = r.text.strip()
+            except Exception:
+                icerik = ""
+
+        if not icerik and groq_key:
+            from groq import Groq
+            client = Groq(api_key=groq_key)
+            r = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+            )
+            icerik = r.choices[0].message.content.strip()
+
+    except Exception as e:
+        icerik = f"[AI hatası: {e}]"
+
+    if not icerik:
+        icerik = "Şu an AI servisi kullanılamıyor. Lütfen daha sonra tekrar deneyin."
+
+    # DB'ye kaydet
+    yol_haritasi = Roadmap(
+        student_id=current_user.id,
+        internship_id=ilan.id,
+        sirket_adi=sirket_adi,
+        departman=ilan.departman or ilan.pozisyon or "",
+        bolum_kodu=ilan.bolum_kodu or "",
+        icerik=icerik,
+    )
+    db.add(yol_haritasi)
+    db.commit()
+    db.refresh(yol_haritasi)
+
+    return {
+        "id":           yol_haritasi.id,
+        "sirket_adi":   yol_haritasi.sirket_adi,
+        "departman":    yol_haritasi.departman,
+        "icerik":       yol_haritasi.icerik,
+        "created_at":   yol_haritasi.created_at,
+    }
+
+
+@router.get("/roadmap/me")
+def my_roadmaps(
+    current_user: User = Depends(require_role(UserRole.student)),
+    db: Session = Depends(get_db),
+):
+    """Öğrencinin kayıtlı yol haritalarını döner."""
+    haritalar = (
+        db.query(Roadmap)
+        .filter(Roadmap.student_id == current_user.id)
+        .order_by(Roadmap.created_at.desc())
+        .limit(10)
+        .all()
+    )
+    return [
+        {
+            "id":         h.id,
+            "sirket_adi": h.sirket_adi,
+            "departman":  h.departman,
+            "icerik":     h.icerik,
+            "created_at": h.created_at,
+        }
+        for h in haritalar
+    ]
+
+
+@router.delete("/roadmap/{roadmap_id}", status_code=204)
+def delete_roadmap(
+    roadmap_id: int,
+    current_user: User = Depends(require_role(UserRole.student)),
+    db: Session = Depends(get_db),
+):
+    from fastapi import HTTPException
+    h = db.query(Roadmap).filter(Roadmap.id == roadmap_id, Roadmap.student_id == current_user.id).first()
+    if not h:
+        raise HTTPException(404, "Yol haritası bulunamadı")
+    db.delete(h)
+    db.commit()
