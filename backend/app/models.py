@@ -79,6 +79,7 @@ class User(Base):
     ogrenci_no = Column(String(50))
     telefon = Column(String(20))
     profil_foto_url = Column(String(500))
+    github_username = Column(String(100))
     email_dogrulandi = Column(Boolean, default=False, nullable=False)
     aktif = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
@@ -97,6 +98,9 @@ class User(Base):
     led_teams = relationship("ProjectTeam", back_populates="lider", cascade="all, delete-orphan")
     team_memberships = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan")
     team_applications = relationship("TeamApplication", back_populates="applicant", cascade="all, delete-orphan")
+    owned_groups = relationship("Group", back_populates="owner", cascade="all, delete-orphan")
+    group_memberships = relationship("GroupMembership", back_populates="user", cascade="all, delete-orphan")
+    skills = relationship("UserSkill", back_populates="user", cascade="all, delete-orphan")
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +214,12 @@ class Portfolio(Base):
     teknik_yetkinlik    = Column(Float, default=0.0)
     beceriler           = Column(Float, default=0.0)
     analiz_durumu       = Column(String(20), default="bekliyor")  # bekliyor/basarili/api_hatasi
+    katki_analizi       = Column(JSONB)          # commit/dosya/kategori bazlı katkı
+    mimari              = Column(JSONB)          # {tip, api, render, docker, ci, test, monorepo}
+    seviye              = Column(String(40))     # tutorial / personal / production
+    saglik              = Column(JSONB)          # {son_commit_gun, acik_issue, readme, license, aktif_mi}
+    kavramlar           = Column(JSONB)          # ["JWT auth","REST API tasarımı",...]
+    beceri_kategorileri = Column(JSONB)          # {frontend, backend, database, devops, testing, documentation}
     gorseller = Column(JSONB)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
@@ -392,3 +402,167 @@ class Roadmap(Base):
 
     student    = relationship("User", foreign_keys=[student_id])
     internship = relationship("Internship", foreign_keys=[internship_id])
+
+
+# ---------------------------------------------------------------------------
+# skill_tags & user_skills
+# ---------------------------------------------------------------------------
+
+class SkillTag(Base):
+    __tablename__ = "skill_tags"
+
+    id = Column(Integer, primary_key=True, index=True)
+    ad = Column(String(100), unique=True, nullable=False)
+    slug = Column(String(120), unique=True, nullable=False, index=True)
+    kategori = Column(String(80))
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    users = relationship("UserSkill", back_populates="skill", cascade="all, delete-orphan")
+
+
+class UserSkill(Base):
+    __tablename__ = "user_skills"
+    __table_args__ = (
+        UniqueConstraint("user_id", "skill_tag_id", name="uq_user_skill"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    skill_tag_id = Column(Integer, ForeignKey("skill_tags.id", ondelete="CASCADE"), nullable=False, index=True)
+    seviye = Column(Integer, default=3, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    user = relationship("User", back_populates="skills")
+    skill = relationship("SkillTag", back_populates="users")
+
+
+# ---------------------------------------------------------------------------
+# groups
+# ---------------------------------------------------------------------------
+
+class Group(Base):
+    __tablename__ = "groups"
+
+    id = Column(Integer, primary_key=True, index=True)
+    ad = Column(String(200), nullable=False)
+    aciklama = Column(Text)
+    kapak_url = Column(String(500))
+    kategori = Column(String(80))
+    max_uye = Column(Integer, default=10, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    acik = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    owner = relationship("User", back_populates="owned_groups")
+    memberships = relationship("GroupMembership", back_populates="group", cascade="all, delete-orphan")
+    join_requests = relationship("GroupJoinRequest", back_populates="group", cascade="all, delete-orphan")
+    projects = relationship("Project", back_populates="group", cascade="all, delete-orphan")
+    messages = relationship("GroupMessage", back_populates="group", cascade="all, delete-orphan")
+
+
+class GroupMembership(Base):
+    __tablename__ = "group_memberships"
+    __table_args__ = (
+        UniqueConstraint("group_id", "user_id", name="uq_group_member"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    rol = Column(String(20), default="member", nullable=False)  # owner/moderator/member
+    katilim_tarihi = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    group = relationship("Group", back_populates="memberships")
+    user = relationship("User", back_populates="group_memberships")
+
+
+class GroupJoinRequest(Base):
+    __tablename__ = "group_join_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    mesaj = Column(Text)
+    durum = Column(String(20), default="bekleyen", nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    group = relationship("Group", back_populates="join_requests")
+    user = relationship("User")
+
+
+# ---------------------------------------------------------------------------
+# projects (grubun altında)
+# ---------------------------------------------------------------------------
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=False, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    ad = Column(String(200), nullable=False)
+    kisa_aciklama = Column(Text)
+    kategori = Column(String(60))
+    sure = Column(String(40))
+    seviye = Column(String(20))
+    hedef = Column(Text)
+    haftalik_saat = Column(Integer)
+    github_var = Column(Boolean, default=False, nullable=False)
+    pitch = Column(Text)
+    gereksinimler = Column(Text)
+    durum = Column(String(20), default="acik", nullable=False)  # acik/devam/tamamlandi
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    group = relationship("Group", back_populates="projects")
+    owner = relationship("User")
+    departments = relationship("ProjectDepartment", back_populates="project", cascade="all, delete-orphan")
+
+
+class ProjectDepartment(Base):
+    __tablename__ = "project_departments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    ad = Column(String(100), nullable=False)
+    gereken_kisi = Column(Integer, default=1, nullable=False)
+    beklentiler = Column(Text)
+    beceri_etiketleri = Column(JSONB)  # ["react","typescript"]
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    project = relationship("Project", back_populates="departments")
+    applications = relationship("DepartmentApplication", back_populates="department", cascade="all, delete-orphan")
+
+
+class DepartmentApplication(Base):
+    __tablename__ = "department_applications"
+    __table_args__ = (
+        UniqueConstraint("department_id", "applicant_id", name="uq_department_application"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    department_id = Column(Integer, ForeignKey("project_departments.id", ondelete="CASCADE"), nullable=False, index=True)
+    applicant_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    mesaj = Column(Text)
+    durum = Column(String(20), default="bekleyen", nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    department = relationship("ProjectDepartment", back_populates="applications")
+    applicant = relationship("User")
+
+
+# ---------------------------------------------------------------------------
+# group_messages
+# ---------------------------------------------------------------------------
+
+class GroupMessage(Base):
+    __tablename__ = "group_messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=False, index=True)
+    sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    icerik = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+    edited_at = Column(DateTime(timezone=True))
+
+    group = relationship("Group", back_populates="messages")
+    sender = relationship("User")

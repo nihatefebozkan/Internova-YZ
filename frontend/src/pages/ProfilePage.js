@@ -4,16 +4,248 @@ import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 import btkIcon from "../assets/BTK_icon.jpg";
 
+const ANALIZ_ADIMLARI = [
+  { ikon: "🔗", metin: "GitHub repo bilgisi çekiliyor…" },
+  { ikon: "📁", metin: "Bağımlılık dosyaları indiriliyor…" },
+  { ikon: "👥", metin: "Katkıcılar ve commit geçmişi taranıyor…" },
+  { ikon: "🤖", metin: "Yapay zeka mimari + kavramlar + radar üretiyor…" },
+  { ikon: "📊", metin: "Skorlar ve eşleşmeler hesaplanıyor…" },
+];
+
+const SEVIYE_BADGE = {
+  tutorial:   { ad: "Tutorial / Eğitim", bg: "bg-gray-100",   fg: "text-gray-600",   ikon: "📘" },
+  personal:   { ad: "Kişisel proje",      bg: "bg-blue-50",    fg: "text-blue-700",   ikon: "👤" },
+  production: { ad: "Üretim seviyesi",   bg: "bg-emerald-50", fg: "text-emerald-700", ikon: "🚀" },
+};
+
+// ── DETAY PANELİ ──────────────────────────────────────────────────
+function DetayPaneli({ proje }) {
+  const [tab, setTab] = useState("mimari");
+  const [eslesenler, setEslesenler] = useState(null);
+  const [eYukleniyor, setEYukleniyor] = useState(false);
+
+  useEffect(() => {
+    if (tab !== "eslesmeler" || eslesenler) return;
+    setEYukleniyor(true);
+    api.get(`/portfolio/projects/${proje.id}/eslesen-ilanlar`)
+      .then(r => setEslesenler(r.data))
+      .catch(() => setEslesenler({ staj_ilanlari: [], grup_projeleri: [] }))
+      .finally(() => setEYukleniyor(false));
+  }, [tab, proje.id, eslesenler]);
+
+  const m = proje.mimari || {};
+  const s = proje.saglik || {};
+  const bk = proje.beceri_kategorileri || {};
+  const sev = SEVIYE_BADGE[proje.seviye] || null;
+
+  const tabs = [
+    { k: "mimari",     l: "🏗 Mimari" },
+    { k: "saglik",     l: "💚 Sağlık" },
+    { k: "kavramlar",  l: "🧠 Kavramlar" },
+    { k: "radar",      l: "📊 Radar" },
+    { k: "eslesmeler", l: "🔗 Eşleşmeler" },
+  ];
+
+  return (
+    <div className="mt-3 border-t border-gray-100 pt-3">
+      {/* Sekme bar */}
+      <div className="flex gap-1 border-b border-gray-100 mb-3 overflow-x-auto">
+        {tabs.map(t => (
+          <button key={t.k} onClick={() => setTab(t.k)}
+            className={`px-3 py-2 text-[11px] font-bold border-b-2 transition-all whitespace-nowrap
+              ${tab === t.k ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-900'}`}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+
+      {/* MİMARİ */}
+      {tab === "mimari" && (
+        <div className="flex flex-col gap-2 text-[11px]">
+          {sev && (
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-bold w-fit ${sev.bg} ${sev.fg}`}>
+              {sev.ikon} {sev.ad}
+            </div>
+          )}
+          {Object.keys(m).length === 0 ? (
+            <p className="text-gray-400">Mimari bilgisi yok. Yeniden analiz et.</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                ["Mimari Tipi", m.tip],
+                ["API", m.api],
+                ["Render", m.render],
+                ["Veritabanı", m.veritabani],
+                ["Monorepo", m.monorepo ? "Evet" : "Hayır"],
+                ["Test", m.test_var ? "Var" : "Yok"],
+                ["CI/CD", m.ci_var ? "Var" : "Yok"],
+                ["Docker", m.docker_var ? "Var" : "Yok"],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg">
+                  <span className="text-gray-500 font-semibold">{k}</span>
+                  <span className="text-gray-900 font-bold">{v || '—'}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SAĞLIK */}
+      {tab === "saglik" && (
+        <div className="flex flex-col gap-2 text-[11px]">
+          {s.aktif_mi !== undefined && (
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-bold w-fit
+              ${s.aktif_mi ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+              {s.aktif_mi ? '🟢 Aktif repo' : '⚫ Terk edilmiş (180+ gün)'}
+              {s.son_commit_gun !== null && s.son_commit_gun !== undefined && (
+                <span className="ml-1">· son commit {s.son_commit_gun} gün önce</span>
+              )}
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              ["⭐ Star", s.stars],
+              ["🍴 Fork", s.forks],
+              ["📦 Boyut", s.size_kb ? `${s.size_kb} KB` : '—'],
+              ["🌿 Default branch", s.default_branch],
+              ["🐛 Açık issue", s.acik_issue],
+              ["🔀 Açık PR", s.acik_pr],
+              ["📄 README", s.readme_var ? `${s.readme_uzunluk} byte` : 'Yok'],
+              ["⚖️ License", s.license_adi || (s.license_var ? 'Var' : 'Yok')],
+              ["📜 Changelog", s.changelog_var ? 'Var' : 'Yok'],
+              ["🧪 Test klasörü", s.test_klasoru_var ? 'Var' : 'Yok'],
+              ["🐳 Docker", s.docker_var ? 'Var' : 'Yok'],
+              ["⚙️ CI/CD", s.ci_var ? 'Var' : 'Yok'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg">
+                <span className="text-gray-500 font-semibold">{k}</span>
+                <span className="text-gray-900 font-bold">{v ?? '—'}</span>
+              </div>
+            ))}
+          </div>
+          {s.topics?.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {s.topics.map(t => <span key={t} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full font-semibold">#{t}</span>)}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* KAVRAMLAR */}
+      {tab === "kavramlar" && (
+        <div className="flex flex-col gap-2 text-[11px]">
+          {!proje.kavramlar?.length ? (
+            <p className="text-gray-400">Henüz kavram çıkarılmadı. Yeniden analiz et.</p>
+          ) : (
+            <>
+              <p className="text-gray-500">Bu projede gösterdiğin teknik beceriler:</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {proje.kavramlar.map(k => (
+                  <span key={k} className="px-3 py-1.5 bg-gradient-to-r from-purple-50 to-blue-50 border border-blue-100 text-gray-800 rounded-full font-bold">
+                    ✨ {k}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* RADAR */}
+      {tab === "radar" && (
+        <div className="flex flex-col gap-2 text-[11px]">
+          {Object.keys(bk).length === 0 ? (
+            <p className="text-gray-400">Beceri kategorileri yok. Yeniden analiz et.</p>
+          ) : (
+            <>
+              <p className="text-gray-500 mb-1">Bu projenin alan dağılımı:</p>
+              {[
+                ["frontend", "🎨 Frontend",   "bg-blue-500"],
+                ["backend", "⚙️ Backend",     "bg-emerald-500"],
+                ["database", "🗄 Veritabanı", "bg-amber-500"],
+                ["devops", "🐳 DevOps",       "bg-orange-500"],
+                ["testing", "🧪 Test",        "bg-purple-500"],
+                ["documentation", "📝 Dokümantasyon", "bg-gray-500"],
+              ].map(([key, label, color]) => {
+                const v = bk[key] ?? 0;
+                return (
+                  <div key={key} className="flex items-center gap-3">
+                    <span className="w-28 text-gray-600 font-semibold">{label}</span>
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${v}%` }} />
+                    </div>
+                    <span className="w-10 text-right text-gray-900 font-bold">{v}</span>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* EŞLEŞMELER */}
+      {tab === "eslesmeler" && (
+        <div className="flex flex-col gap-3 text-[11px]">
+          {eYukleniyor ? (
+            <p className="text-gray-400">Yükleniyor…</p>
+          ) : !eslesenler ? (
+            <p className="text-gray-400">Veri yok</p>
+          ) : (
+            <>
+              <div>
+                <h4 className="font-bold text-gray-700 mb-1">🏢 Staj İlanları ({eslesenler.staj_ilanlari?.length || 0})</h4>
+                {eslesenler.staj_ilanlari?.length ? eslesenler.staj_ilanlari.map(i => (
+                  <a key={i.id} href={`/internships/${i.id}`}
+                    className="block px-3 py-2 mb-1 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100">
+                    <div className="flex justify-between">
+                      <span className="font-bold text-gray-800">{i.pozisyon}</span>
+                      <span className="text-blue-700 font-bold">%{i.skor}</span>
+                    </div>
+                    {i.departman && <span className="text-gray-500">{i.departman}</span>}
+                    {i.eslesen?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {i.eslesen.map(e => <span key={e} className="text-[10px] bg-white text-blue-700 px-1.5 py-0.5 rounded">{e}</span>)}
+                      </div>
+                    )}
+                  </a>
+                )) : <p className="text-gray-400">Eşleşen ilan yok</p>}
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-700 mb-1">👥 Grup Projeleri ({eslesenler.grup_projeleri?.length || 0})</h4>
+                {eslesenler.grup_projeleri?.length ? eslesenler.grup_projeleri.map(g => (
+                  <a key={`${g.project_id}-${g.department_id}`} href={`/projects/${g.project_id}`}
+                    className="block px-3 py-2 mb-1 bg-emerald-50 border border-emerald-100 rounded-lg hover:bg-emerald-100">
+                    <div className="flex justify-between">
+                      <span className="font-bold text-gray-800">{g.proje_adi} <span className="text-gray-500 font-normal">→ {g.departman_adi}</span></span>
+                      <span className="text-emerald-700 font-bold">%{g.skor}</span>
+                    </div>
+                    {g.eslesen?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {g.eslesen.map(e => <span key={e} className="text-[10px] bg-white text-emerald-700 px-1.5 py-0.5 rounded">{e}</span>)}
+                      </div>
+                    )}
+                  </a>
+                )) : <p className="text-gray-400">Eşleşen grup projesi yok</p>}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProfilePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
 
   const [activeTab, setActiveTab] = useState("Sertifikalar");
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isSkillModalOpen, setIsSkillModalOpen] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-  const [profile, setProfile] = useState({ ad: "", soyad: "", email: "", telefon: "", bolum: "", ogrenci_no: "" });
+  const [profile, setProfile] = useState({ ad: "", soyad: "", email: "", telefon: "", bolum: "", ogrenci_no: "", github_username: "" });
   const [tempProfile, setTempProfile] = useState({ ...profile });
   const [certificates, setCertificates] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -23,6 +255,7 @@ function ProfilePage() {
   const [newSkill, setNewSkill] = useState({ name: "", progress: 50 });
   const [githubUrl, setGithubUrl] = useState("");
   const [analizYukleniyor, setAnalizYukleniyor] = useState(false);
+  const [analizAdimi, setAnalizAdimi] = useState(0);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
 
   // Sertifika modal state
@@ -38,7 +271,7 @@ function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    const p = { ad: user.ad||"", soyad: user.soyad||"", email: user.email||"", telefon: user.telefon||"", bolum: user.bolum||"", ogrenci_no: user.ogrenci_no||"" };
+    const p = { ad: user.ad||"", soyad: user.soyad||"", email: user.email||"", telefon: user.telefon||"", bolum: user.bolum||"", ogrenci_no: user.ogrenci_no||"", github_username: user.github_username||"" };
     setProfile(p); setTempProfile(p);
     Promise.all([
       api.get("/certificates/me").catch(() => ({ data: [] })),
@@ -55,21 +288,61 @@ function ProfilePage() {
     e.preventDefault();
     if (!user?.id) { alert("Kullanıcı bilgisi yüklenemedi."); return; }
     try {
-      await api.put(`/users/${user.id}`, { ad: tempProfile.ad, soyad: tempProfile.soyad, telefon: tempProfile.telefon, ogrenci_no: tempProfile.ogrenci_no });
-      setProfile({ ...tempProfile }); setIsEditingProfile(false);
+      const r = await api.put(`/users/${user.id}`, { ad: tempProfile.ad, soyad: tempProfile.soyad, telefon: tempProfile.telefon, ogrenci_no: tempProfile.ogrenci_no, github_username: tempProfile.github_username });
+      setProfile({ ...tempProfile });
+      updateUser(r.data);   // AuthContext'i tazeleyerek github_username vb. anında yansısın
+      setIsEditingProfile(false);
     } catch { alert("Güncelleme başarısız."); }
   };
 
   const handleAddGithub = async (e) => {
     e.preventDefault();
     if (!githubUrl.trim()) return;
-    setAnalizYukleniyor(true);
+    setAnalizYukleniyor(true); setAnalizAdimi(0);
     try {
       const res = await api.post("/portfolio/analyze-github", { github_url: githubUrl });
       setProjects(prev => [res.data, ...prev]);
       setGithubUrl(""); setIsProjectModalOpen(false);
     } catch (err) { alert(err.response?.data?.detail || "Analiz başarısız."); }
-    finally { setAnalizYukleniyor(false); }
+    finally { setAnalizYukleniyor(false); setAnalizAdimi(0); }
+  };
+
+  // Yükleme sırasında adım göstergesini ilerlet (son adımda durdur)
+  useEffect(() => {
+    if (!analizYukleniyor) return;
+    const t = setInterval(() => {
+      setAnalizAdimi(i => Math.min(i + 1, ANALIZ_ADIMLARI.length - 1));
+    }, 1500);
+    return () => clearInterval(t);
+  }, [analizYukleniyor]);
+
+  const [editingProj, setEditingProj] = useState(null);
+  const [editForm, setEditForm] = useState({ proje_adi: '', aciklama: '', konu: '', demo_link: '' });
+  const [reanalyzeId, setReanalyzeId] = useState(null);
+  const [detayAcik, setDetayAcik] = useState({});  // {id: true/false}
+
+  const startEditProj = (p) => {
+    setEditingProj(p.id);
+    setEditForm({
+      proje_adi: p.proje_adi || '', aciklama: p.aciklama || '',
+      konu: p.konu || '', demo_link: p.demo_link || '',
+    });
+  };
+  const saveEditProj = async (id) => {
+    try {
+      const r = await api.put(`/portfolio/projects/${id}`, editForm);
+      setProjects(prev => prev.map(p => p.id === id ? r.data : p));
+      setEditingProj(null);
+    } catch { alert('Güncelleme başarısız'); }
+  };
+  const reanalyzeProj = async (id) => {
+    setReanalyzeId(id);
+    try {
+      const r = await api.post(`/portfolio/projects/${id}/reanalyze`);
+      setProjects(prev => prev.map(p => p.id === id ? r.data : p));
+    } catch (e) {
+      alert(e.response?.data?.detail || 'Yeniden analiz başarısız');
+    } finally { setReanalyzeId(null); }
   };
 
   const handleDeleteProject = async (id) => {
@@ -163,7 +436,7 @@ function ProfilePage() {
 
             {!isEditingProfile ? (
               <div className="flex flex-col gap-3.5 text-xs">
-                {[["E-posta", profile.email], ["Telefon", profile.telefon||"—"], ["Bölüm", profile.bolum||"—"], ["Öğrenci No", profile.ogrenci_no||"—"]].map(([l,v]) => (
+                {[["E-posta", profile.email], ["Telefon", profile.telefon||"—"], ["Bölüm", profile.bolum||"—"], ["Öğrenci No", profile.ogrenci_no||"—"], ["GitHub", profile.github_username ? `@${profile.github_username}` : "—"]].map(([l,v]) => (
                   <div key={l} className="flex flex-col gap-0.5">
                     <span className="text-gray-400 font-medium">{l}</span>
                     <span className="text-gray-800 font-bold">{v}</span>
@@ -173,7 +446,7 @@ function ProfilePage() {
               </div>
             ) : (
               <form onSubmit={handleProfileSave} className="flex flex-col gap-3 text-xs">
-                {[["Ad", "ad"], ["Soyad", "soyad"], ["Telefon", "telefon"], ["Öğrenci No", "ogrenci_no"]].map(([l, k]) => (
+                {[["Ad", "ad"], ["Soyad", "soyad"], ["Telefon", "telefon"], ["Öğrenci No", "ogrenci_no"], ["GitHub kullanıcı adı", "github_username"]].map(([l, k]) => (
                   <div key={k} className="flex flex-col gap-1">
                     <label className="font-bold text-gray-600">{l}</label>
                     <input value={tempProfile[k]} onChange={e => setTempProfile(p => ({...p, [k]: e.target.value}))} className="p-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white font-semibold" />
@@ -297,35 +570,134 @@ function ProfilePage() {
                     <div className="text-center py-10 text-gray-300 text-sm">Henüz proje eklenmemiş.</div>
                   ) : (
                     <div className="flex flex-col gap-4 mt-2">
-                      {projects.map(proj => (
-                        <div key={proj.id} className="p-5 border border-gray-100 bg-white rounded-2xl relative flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
-                          <div className="absolute top-5 right-5 flex gap-3">
-                            <button onClick={() => handleDeleteProject(proj.id)} className="text-xs font-bold text-red-500 hover:underline">Sil</button>
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-bold text-gray-900 pr-12">{proj.proje_adi}</h4>
-                            {proj.konu && <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">🏷️ {proj.konu}</span>}
-                          </div>
-                          {proj.aciklama && <p className="text-xs text-gray-500 line-clamp-2">{proj.aciklama}</p>}
-                          {proj.teknolojiler?.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
-                              {proj.teknolojiler.map(t => <span key={t} className="px-2.5 py-1 bg-gray-50 text-gray-600 text-[10px] font-bold rounded-lg border border-gray-100">{t}</span>)}
+                      {projects.map(proj => {
+                        const k = proj.katki_analizi;
+                        const rolMap = {
+                          "frontend-agirlikli": ["🎨 Frontend", "bg-blue-50 text-blue-700"],
+                          "backend-agirlikli":  ["⚙️ Backend",  "bg-emerald-50 text-emerald-700"],
+                          "fullstack":          ["🔁 Full-stack", "bg-purple-50 text-purple-700"],
+                          "devops":             ["🐳 DevOps", "bg-orange-50 text-orange-700"],
+                          "dokuman":            ["📝 Dokümantasyon", "bg-gray-50 text-gray-600"],
+                          "karisik":            ["🧩 Karışık", "bg-gray-50 text-gray-600"],
+                          "bilinmiyor":         ["❔ Belirsiz", "bg-gray-50 text-gray-500"],
+                        };
+                        const rol = rolMap[k?.rol_kategorisi] || rolMap.bilinmiyor;
+                        const calismaEtk = k?.calisma_tipi === 'solo'
+                          ? '🧑 Solo proje'
+                          : k?.calisma_tipi === 'takim' ? `👥 Takım (${k.toplam_katkici})` : null;
+
+                        return (
+                        <div key={proj.id} className="p-5 border border-gray-100 bg-white rounded-2xl flex flex-col gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <h4 className="text-sm font-bold text-gray-900">{proj.proje_adi}</h4>
+                              {proj.konu && <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold inline-block mt-1">🏷️ {proj.konu}</span>}
                             </div>
-                          )}
-                          <div className="flex items-center gap-4 text-[11px] font-bold mt-1">
-                            {proj.github_link && <a href={proj.github_link} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-blue-600 flex items-center gap-1">🔗 GitHub</a>}
-                            {proj.proje_buyuklugu > 0 && (
-                              <div className="flex items-center gap-2 flex-1">
-                                <span className="text-gray-400">Büyüklük</span>
-                                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                  <div className="h-full bg-blue-400 rounded-full" style={{ width: `${proj.proje_buyuklugu}%` }} />
-                                </div>
-                                <span className="text-blue-600">%{proj.proje_buyuklugu}</span>
+                            {editingProj !== proj.id && (
+                              <div className="flex gap-2 flex-shrink-0 flex-wrap justify-end">
+                                <button onClick={() => setDetayAcik(d => ({ ...d, [proj.id]: !d[proj.id] }))}
+                                  className={`text-[11px] font-bold border px-2.5 py-1 rounded-lg
+                                    ${detayAcik[proj.id] ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-600 hover:text-gray-900 border-gray-200'}`}>
+                                  📊 {detayAcik[proj.id] ? 'Detayları Gizle' : 'Detaylar'}
+                                </button>
+                                <button onClick={() => startEditProj(proj)} className="text-[11px] font-bold text-gray-600 hover:text-gray-900 border border-gray-200 px-2.5 py-1 rounded-lg">✏️ Düzenle</button>
+                                {proj.github_link && (
+                                  <button onClick={() => reanalyzeProj(proj.id)} disabled={reanalyzeId === proj.id}
+                                    className="text-[11px] font-bold text-gray-600 hover:text-gray-900 border border-gray-200 px-2.5 py-1 rounded-lg disabled:opacity-50">
+                                    {reanalyzeId === proj.id ? '⏳ Analiz…' : '🔄 Yeniden Analiz'}
+                                  </button>
+                                )}
+                                <button onClick={() => handleDeleteProject(proj.id)} className="text-[11px] font-bold text-red-500 hover:text-red-700 border border-red-100 px-2.5 py-1 rounded-lg">Sil</button>
                               </div>
                             )}
                           </div>
+
+                          {editingProj === proj.id ? (
+                            <div className="flex flex-col gap-2 mt-1">
+                              <input value={editForm.proje_adi} onChange={e => setEditForm(f => ({ ...f, proje_adi: e.target.value }))}
+                                placeholder="Proje adı" className="text-xs px-3 py-2 border border-gray-200 rounded-lg" />
+                              <input value={editForm.konu} onChange={e => setEditForm(f => ({ ...f, konu: e.target.value }))}
+                                placeholder="Konu" className="text-xs px-3 py-2 border border-gray-200 rounded-lg" />
+                              <textarea rows={3} value={editForm.aciklama} onChange={e => setEditForm(f => ({ ...f, aciklama: e.target.value }))}
+                                placeholder="Açıklama" className="text-xs px-3 py-2 border border-gray-200 rounded-lg" />
+                              <input value={editForm.demo_link} onChange={e => setEditForm(f => ({ ...f, demo_link: e.target.value }))}
+                                placeholder="Demo linki (opsiyonel)" className="text-xs px-3 py-2 border border-gray-200 rounded-lg" />
+                              <div className="flex gap-2">
+                                <button onClick={() => setEditingProj(null)} className="flex-1 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 py-2 rounded-lg">İptal</button>
+                                <button onClick={() => saveEditProj(proj.id)} className="flex-1 text-xs font-bold text-white bg-black py-2 rounded-lg">Kaydet</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {proj.aciklama && <p className="text-xs text-gray-500 line-clamp-2">{proj.aciklama}</p>}
+                              {proj.teknolojiler?.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5">
+                                  {proj.teknolojiler.map(t => <span key={t} className="px-2.5 py-1 bg-gray-50 text-gray-600 text-[10px] font-bold rounded-lg border border-gray-100">{t}</span>)}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-4 text-[11px] font-bold">
+                                {proj.github_link && <a href={proj.github_link} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-blue-600 flex items-center gap-1">🔗 GitHub</a>}
+                                {proj.demo_link && <a href={proj.demo_link} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-blue-600 flex items-center gap-1">🌐 Demo</a>}
+                                {proj.proje_buyuklugu > 0 && (
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <span className="text-gray-400">Büyüklük</span>
+                                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                      <div className="h-full bg-blue-400 rounded-full" style={{ width: `${proj.proje_buyuklugu}%` }} />
+                                    </div>
+                                    <span className="text-blue-600">%{proj.proje_buyuklugu}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Katkı analizi paneli */}
+                              {k && (
+                                <div className="mt-2 p-3 bg-gray-50 border border-gray-100 rounded-xl flex flex-col gap-2 text-[11px]">
+                                  {k.hata ? (
+                                    <div className="bg-red-50 border border-red-200 px-3 py-2 rounded-lg">
+                                      <p className="font-bold text-red-700">⚠ Katkı analizi yapılamadı</p>
+                                      <p className="text-red-600 mt-0.5">{k.hata}</p>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div className="flex items-center justify-between flex-wrap gap-2">
+                                        <span className="font-bold text-gray-700">Katkı Analizi</span>
+                                        {calismaEtk && <span className="text-gray-500 font-semibold">{calismaEtk}</span>}
+                                      </div>
+                                      {k.kullanici_var_mi ? (
+                                        <>
+                                          <div className="flex items-center gap-2 flex-wrap">
+                                            <span className={`px-2 py-0.5 rounded-full font-bold ${rol[1]}`}>{rol[0]}</span>
+                                            <span className="text-gray-700 font-semibold">%{k.katki_yuzdesi} · {k.kullanici_commit}/{k.toplam_commit} commit</span>
+                                          </div>
+                                          {k.dokunulan_dizinler && Object.keys(k.dokunulan_dizinler).length > 0 && (
+                                            <div className="flex flex-wrap gap-1">
+                                              {Object.entries(k.dokunulan_dizinler).sort((a, b) => b[1] - a[1]).map(([kat, sayi]) => (
+                                                <span key={kat} className="px-2 py-0.5 bg-white border border-gray-200 rounded-full text-gray-600 font-semibold">
+                                                  {kat} · {sayi}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <p className="text-gray-500">
+                                          {k.github_username
+                                            ? `"${k.github_username}" bu repo'da katkı bulunmuyor.`
+                                            : 'Profilde GitHub kullanıcı adı yok — sadece genel istatistikler.'}
+                                        </p>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Detay paneli (mimari/sağlık/kavramlar/radar/eşleşmeler) */}
+                              {detayAcik[proj.id] && <DetayPaneli proje={proj} />}
+                            </>
+                          )}
                         </div>
-                      ))}
+                      );
+                      })}
                     </div>
                   )}
                 </>
@@ -379,17 +751,32 @@ function ProfilePage() {
               </div>
               <button onClick={() => setIsProjectModalOpen(false)} className="text-gray-400 hover:text-gray-600 cursor-pointer">✕</button>
             </div>
-            <form onSubmit={handleAddGithub} className="flex flex-col gap-4 text-xs">
-              <div className="flex flex-col gap-1.5">
-                <label className="font-bold text-gray-700">GitHub Repo Linki</label>
-                <input type="url" placeholder="https://github.com/kullanici/repo" value={githubUrl} onChange={e => setGithubUrl(e.target.value)} required
-                  className="w-full bg-gray-50 p-3 rounded-xl border border-gray-100 focus:bg-white focus:outline-none font-medium text-gray-800 placeholder:text-gray-300" />
+            {analizYukleniyor ? (
+              <div className="flex flex-col items-center gap-4 py-6">
+                <div className="h-10 w-10 border-4 border-gray-200 border-t-black rounded-full animate-spin" />
+                <p className="text-sm font-bold text-gray-800 text-center">
+                  {ANALIZ_ADIMLARI[analizAdimi].ikon} {ANALIZ_ADIMLARI[analizAdimi].metin}
+                </p>
+                <div className="flex gap-1 justify-center">
+                  {ANALIZ_ADIMLARI.map((_, i) => (
+                    <span key={i} className={`h-1 w-7 rounded ${i <= analizAdimi ? 'bg-black' : 'bg-gray-200'} transition-colors`} />
+                  ))}
+                </div>
+                <p className="text-[11px] text-gray-400">10-20 saniye sürebilir.</p>
               </div>
-              <button type="submit" disabled={analizYukleniyor}
-                className="w-full bg-black text-white py-3.5 rounded-xl font-bold hover:bg-gray-800 shadow-md transition-all cursor-pointer disabled:opacity-50">
-                {analizYukleniyor ? "⏳ Analiz ediliyor..." : "🤖 Analiz Et & Ekle"}
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleAddGithub} className="flex flex-col gap-4 text-xs">
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-bold text-gray-700">GitHub Repo Linki</label>
+                  <input type="url" placeholder="https://github.com/kullanici/repo" value={githubUrl} onChange={e => setGithubUrl(e.target.value)} required
+                    className="w-full bg-gray-50 p-3 rounded-xl border border-gray-100 focus:bg-white focus:outline-none font-medium text-gray-800 placeholder:text-gray-300" />
+                </div>
+                <button type="submit"
+                  className="w-full bg-black text-white py-3.5 rounded-xl font-bold hover:bg-gray-800 shadow-md transition-all cursor-pointer">
+                  🤖 Analiz Et & Ekle
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

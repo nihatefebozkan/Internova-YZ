@@ -1,6 +1,5 @@
-// Kullanıcı Profil Context'i — Genişletilmiş profil verisi (portfolyo, rozetler, beceriler)
+// Kullanıcı Profil Context'i — Genişletilmiş profil verisi (rozetler, beceriler vb.)
 // AuthContext yalnızca kimlik doğrulama tutar; ayrıntılı profil burada
-// Dolduracak: Nihat (userService + portfolioService ile populate edilecek)
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';

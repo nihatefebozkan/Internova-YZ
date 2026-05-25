@@ -34,6 +34,20 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const refreshUser = async () => {
+    try {
+      const data = await getCurrentUser();
+      setUser(data);
+      return data;
+    } catch {
+      return null;
+    }
+  };
+
+  const updateUser = (partial) => {
+    setUser((prev) => (prev ? { ...prev, ...partial } : prev));
+  };
+
   const logout = async () => {
     try {
       await api.post('/auth/logout');
@@ -46,7 +60,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

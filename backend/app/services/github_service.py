@@ -178,13 +178,13 @@ async def bagimlilik_dosyalari_topla(owner: str, repo: str, mevcut_dosyalar: lis
 # ─────────────────────────────────────────────────────────────────
 
 def _llm_prompt_olustur(repo_bilgi: dict, kok_dizin: list[str], dosyalar: dict[str, str]) -> str:
-    dizin_listesi = "\n".join(f"- {d}" for d in kok_dizin[:50])
+    _ = "\n".join(f"- {d}" for d in kok_dizin[:50])  # placeholder, unused
     dosya_icerik  = ""
     for ad, icerik in dosyalar.items():
         kisaltilmis = icerik[:2000] if icerik else ""
         dosya_icerik += f"\n\n### {ad}\n```\n{kisaltilmis}\n```"
 
-    return f"""Analyze this GitHub repository and return ONLY valid JSON, no other text.
+    return f"""Analyze this GitHub repository deeply and return ONLY one valid JSON object, no other text, no markdown fences.
 
 Repo: {repo_bilgi['ad']}
 Description: {repo_bilgi['aciklama']}
@@ -202,20 +202,48 @@ Return this exact JSON structure:
   "teknoloji_skoru": 70,
   "konu_skoru": 80,
   "buyukluk_skoru": 45,
-  "ozet": "one sentence summary"
+  "ozet": "one sentence summary in Turkish",
+  "mimari": {{
+    "tip": "monolit",
+    "api": "REST",
+    "render": "SPA",
+    "monorepo": false,
+    "test_var": true,
+    "ci_var": true,
+    "docker_var": true,
+    "veritabani": "PostgreSQL"
+  }},
+  "seviye": "personal",
+  "kavramlar": ["JWT auth", "REST API tasarımı", "Async programming"],
+  "beceri_kategorileri": {{
+    "frontend": 65,
+    "backend": 80,
+    "database": 70,
+    "devops": 30,
+    "testing": 45,
+    "documentation": 60
+  }}
 }}
 
 Rules:
-- teknolojiler: list of technologies/libraries used
+- teknolojiler: list of technologies/libraries used (Python, React, PostgreSQL, etc.)
 - konu: project subject in Turkish (2-4 words, e.g. "web gelistirme", "veri analizi", "makine ogrenmesi")
 - teknoloji_skoru: 0-100, how advanced and diverse the tech stack is
 - konu_skoru: 0-100, how technically deep and focused the subject matter is
-- buyukluk_skoru: 0-100, estimated project size/complexity based on:
-    * number of files/folders in root
-    * number and variety of dependencies
-    * whether it has multiple modules/packages (bigger) or is a single script (smaller)
-    * overall scope (personal experiment=10-30, medium project=30-60, production system=60-100)
-- ONLY return the JSON, nothing else"""
+- buyukluk_skoru: 0-100, estimated project size/complexity
+- ozet: one short Turkish sentence summary
+- mimari.tip: one of ["monolit","mikroservis","serverless","script","kütüphane","mobil","masaüstü","oyun","bilinmiyor"]
+- mimari.api: one of ["REST","GraphQL","WebSocket","gRPC","yok","bilinmiyor"]
+- mimari.render: one of ["SPA","SSR","SSG","Static","CLI","API-only","Mobile","Native","bilinmiyor"]
+- mimari.monorepo: true/false
+- mimari.test_var: true/false (any tests/ folder or test files)
+- mimari.ci_var: true/false (.github/workflows, .gitlab-ci.yml etc)
+- mimari.docker_var: true/false (Dockerfile or docker-compose)
+- mimari.veritabani: short string like "PostgreSQL", "MongoDB", "SQLite", or "yok"
+- seviye: one of ["tutorial","personal","production"] — judge maturity from structure, deps, docs, tests, CI
+- kavramlar: 3-8 Turkish capitalized technical concepts/skills demonstrated (e.g. "JWT auth", "RESTful tasarım", "Asenkron programlama", "Embedding tabanlı arama", "Webhook entegrasyonu")
+- beceri_kategorileri: 6 categories, each 0-100. Estimate how much of this project belongs to each category. They DON'T need to sum to 100.
+- ONLY return the JSON object, no commentary, no markdown."""
 
 
 OPENAI_KEY = os.getenv("OPENAI_API_KEY", "").strip()
@@ -318,23 +346,28 @@ async def llm_analiz_et(prompt: str) -> dict:
 # Ana fonksiyon
 # ─────────────────────────────────────────────────────────────────
 
-async def github_repo_analiz_et(github_url: str) -> dict:
+async def github_repo_analiz_et(github_url: str, github_username: str | None = None) -> dict:
     """
     GitHub URL'sinden tam analiz yapar.
     Returns: {
         proje_adi, github_url, aciklama, teknolojiler,
-        kategoriler, ozet, repo_bilgi, hata
+        kategoriler, ozet, repo_bilgi, katki_analizi, hata
     }
     """
     try:
         owner, repo = github_url_parse(github_url)
 
-        # Paralel: repo bilgisi + kök dizin
+        # Paralel: repo bilgisi + kök dizin + katkı analizi
         import asyncio
-        repo_bilgi, kok_dizin = await asyncio.gather(
+        from app.services.katki_service import katki_analizi
+        from app.services.repo_saglik import repo_saglik_al
+        repo_bilgi, kok_dizin, katki = await asyncio.gather(
             repo_bilgi_al(owner, repo),
             kok_dizin_al(owner, repo),
+            katki_analizi(owner, repo, github_username),
         )
+        # Sağlık raporu kök dizine bağımlı, ayrı çağır
+        saglik = await repo_saglik_al(owner, repo, kok_dizin)
 
         # Bağımlılık dosyalarını çek
         dosyalar = await bagimlilik_dosyalari_topla(owner, repo, kok_dizin)
@@ -351,7 +384,7 @@ async def github_repo_analiz_et(github_url: str) -> dict:
         # Açıklama: LLM özeti varsa kullan, yoksa repo açıklaması
         ozet = analiz.get("ozet", "") or repo_bilgi.get("aciklama", "")
 
-        # Her iki API başarısız → hata kaydı döndür
+        # Her iki API başarısız → hata kaydı döndür (sağlık + katkı yine de döner)
         if analiz.get("llm_hatasi"):
             return {
                 "proje_adi":       repo_bilgi["ad"],
@@ -363,6 +396,12 @@ async def github_repo_analiz_et(github_url: str) -> dict:
                 "teknik_yetkinlik": 0.0,
                 "beceriler":       0.0,
                 "analiz_durumu":   "api_hatasi",
+                "katki_analizi":   katki,
+                "saglik":          saglik,
+                "mimari":          None,
+                "seviye":          None,
+                "kavramlar":       [],
+                "beceri_kategorileri": None,
                 "llm_basarili":    False,
                 "hata":            analiz["llm_hatasi"],
             }
@@ -381,6 +420,15 @@ async def github_repo_analiz_et(github_url: str) -> dict:
         # beceriler = teknik_yetkinlik / 100  (0-1 arası normalize)
         beceriler = round(teknik_yetkinlik / 100, 4)
 
+        # Mimari/seviye/kavramlar/beceri_kategorileri normalize et
+        mimari    = analiz.get("mimari") if isinstance(analiz.get("mimari"), dict) else None
+        seviye    = analiz.get("seviye") if isinstance(analiz.get("seviye"), str) else None
+        kavramlar = analiz.get("kavramlar") if isinstance(analiz.get("kavramlar"), list) else []
+        bcat      = analiz.get("beceri_kategorileri") if isinstance(analiz.get("beceri_kategorileri"), dict) else None
+        if bcat:
+            # Anahtar normalize, 0-100 aralığına sıkıştır
+            bcat = {k: max(0, min(100, int(v))) for k, v in bcat.items() if isinstance(v, (int, float))}
+
         return {
             "proje_adi":         repo_bilgi["ad"],
             "github_url":        github_url,
@@ -390,6 +438,12 @@ async def github_repo_analiz_et(github_url: str) -> dict:
             "konu":              konu,
             "teknik_yetkinlik":  teknik_yetkinlik,
             "beceriler":         beceriler,
+            "katki_analizi":     katki,
+            "saglik":            saglik,
+            "mimari":            mimari,
+            "seviye":            seviye,
+            "kavramlar":         kavramlar,
+            "beceri_kategorileri": bcat,
             # debug için
             "teknoloji_skoru":   teknoloji_skoru,
             "konu_skoru":        konu_skoru,

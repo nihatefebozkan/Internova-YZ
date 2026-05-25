@@ -19,11 +19,17 @@ import InternshipDetail from './pages/InternshipDetail';
 import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import AcademicDashboard from './pages/AcademicDashboard';
-import Portfolio from './pages/Portfolio';
 import CareerMap from './pages/CareerMap';
 import Badges from './pages/Badges';
 import InternshipBook from './pages/InternshipBook';
-import TeamMatcher from './pages/TeamMatcher';
+// Portfolio sayfası kaldırıldı — tüm fonksiyonu ProfilePage karşılıyor
+import Groups from './pages/Groups';
+import GroupCreate from './pages/Groups/Create';
+import MyGroups from './pages/Groups/Mine';
+import GroupDetail from './pages/Groups/Detail';
+import GroupChat from './pages/Groups/Chat';
+import ProjectCreate from './pages/Projects/Create';
+import ProjectDetail from './pages/Projects/Detail';
 
 import './App.css';
 
@@ -49,12 +55,22 @@ function AppRoutes() {
           <Route path="/academic-dashboard" element={<ProtectedRoute><AcademicDashboard /></ProtectedRoute>} />
 
           {/* Öğrenci özellikleri */}
-          <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+          <Route path="/portfolio" element={<Navigate to="/profile" replace />} />
           <Route path="/career-map" element={<ProtectedRoute><CareerMap /></ProtectedRoute>} />
           <Route path="/badges" element={<ProtectedRoute><Badges /></ProtectedRoute>} />
           <Route path="/internship-book" element={<ProtectedRoute><InternshipBook /></ProtectedRoute>} />
-          <Route path="/team-matcher" element={<ProtectedRoute><TeamMatcher /></ProtectedRoute>} />
+          <Route path="/team-matcher" element={<Navigate to="/groups" replace />} />
           <Route path="/career-assistant" element={<ProtectedRoute><CareerAssistant /></ProtectedRoute>} />
+
+          {/* Grup yönetimi */}
+          <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
+          <Route path="/groups/new" element={<ProtectedRoute><GroupCreate /></ProtectedRoute>} />
+          <Route path="/groups/me" element={<ProtectedRoute><MyGroups /></ProtectedRoute>} />
+          <Route path="/groups/:id" element={<ProtectedRoute><GroupDetail /></ProtectedRoute>} />
+          <Route path="/groups/:id/chat" element={<ProtectedRoute><GroupChat /></ProtectedRoute>} />
+          <Route path="/groups/:groupId/projects/new" element={<ProtectedRoute><ProjectCreate /></ProtectedRoute>} />
+          <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
+          <Route path="/skills" element={<Navigate to="/profile" replace />} />
 
           {/* Profil */}
           <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

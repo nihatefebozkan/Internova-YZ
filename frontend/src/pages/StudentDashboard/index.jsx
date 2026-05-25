@@ -35,7 +35,7 @@ function StudentDashboard() {
     { text: 'Günlük Rapor Ekle',      icon: '📄', route: '/internship-book' },
     { text: "CV'mi Düzenle",          icon: '📝', route: '/profile' },
     { text: 'Hedef Şirket Yol Haritası', icon: '🎯', route: '/career-map' },
-    { text: 'Takım Bul',              icon: '👥', route: '/team-matcher' },
+    { text: 'Gruplar & Takımlar',     icon: '👥', route: '/groups' },
     { text: 'Kariyer Asistanı',       icon: '🤖', route: '/career-assistant' },
   ];
 

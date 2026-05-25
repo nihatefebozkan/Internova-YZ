@@ -54,6 +54,7 @@ class UserResponse(BaseModel):
     ogrenci_no: Optional[str] = None
     telefon: Optional[str] = None
     profil_foto_url: Optional[str] = None
+    github_username: Optional[str] = None
     aktif: bool
     created_at: datetime
 
@@ -76,6 +77,7 @@ class UserProfileUpdate(BaseModel):
     ogrenci_no: Optional[str] = None
     telefon: Optional[str] = None
     profil_foto_url: Optional[str] = None
+    github_username: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------
@@ -235,6 +237,13 @@ class PortfolioResponse(BaseModel):
     konu:              Optional[str]   = None
     teknik_yetkinlik:  Optional[float] = None
     beceriler:         Optional[float] = None
+    analiz_durumu:     Optional[str]   = None
+    katki_analizi:     Optional[dict]  = None
+    mimari:               Optional[dict]  = None
+    seviye:               Optional[str]   = None
+    saglik:               Optional[dict]  = None
+    kavramlar:            Optional[list]  = None
+    beceri_kategorileri:  Optional[dict]  = None
     gorseller:         Optional[list]  = None
     created_at: datetime
 
@@ -417,3 +426,224 @@ class CompanyProfileResponse(BaseModel):
     internships: list[InternshipResponse] = []
 
     model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Skill Tags & User Skills
+# ---------------------------------------------------------------------------
+
+class SkillTagResponse(BaseModel):
+    id: int
+    ad: str
+    slug: str
+    kategori: Optional[str] = None
+    model_config = {"from_attributes": True}
+
+
+class SkillTagCreate(BaseModel):
+    ad: str
+    kategori: Optional[str] = None
+
+
+class UserSkillItem(BaseModel):
+    skill_tag_id: int
+    seviye: int = 3
+
+
+class UserSkillsUpdate(BaseModel):
+    skills: list[UserSkillItem]
+
+
+class UserSkillResponse(BaseModel):
+    id: int
+    seviye: int
+    skill: SkillTagResponse
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Groups
+# ---------------------------------------------------------------------------
+
+class GroupCreate(BaseModel):
+    ad: str
+    aciklama: Optional[str] = None
+    kapak_url: Optional[str] = None
+    kategori: Optional[str] = None
+    max_uye: int = 10
+    acik: bool = True
+
+
+class GroupUpdate(BaseModel):
+    ad: Optional[str] = None
+    aciklama: Optional[str] = None
+    kapak_url: Optional[str] = None
+    kategori: Optional[str] = None
+    max_uye: Optional[int] = None
+    acik: Optional[bool] = None
+
+
+class GroupMemberItem(BaseModel):
+    id: int
+    user_id: int
+    rol: str
+    katilim_tarihi: datetime
+    user: Optional[UserResponse] = None
+    model_config = {"from_attributes": True}
+
+
+class GroupResponse(BaseModel):
+    id: int
+    ad: str
+    aciklama: Optional[str] = None
+    kapak_url: Optional[str] = None
+    kategori: Optional[str] = None
+    max_uye: int
+    owner_id: int
+    acik: bool
+    created_at: datetime
+    owner: Optional[UserResponse] = None
+    uye_sayisi: int = 0
+    model_config = {"from_attributes": True}
+
+
+class GroupDetailResponse(GroupResponse):
+    memberships: list[GroupMemberItem] = []
+
+
+class GroupJoinRequestCreate(BaseModel):
+    mesaj: Optional[str] = None
+
+
+class GroupJoinRequestResponse(BaseModel):
+    id: int
+    group_id: int
+    user_id: int
+    mesaj: Optional[str] = None
+    durum: str
+    created_at: datetime
+    user: Optional[UserResponse] = None
+    model_config = {"from_attributes": True}
+
+
+class GroupJoinRequestDecision(BaseModel):
+    durum: str  # kabul / red
+
+
+class GroupMemberRoleUpdate(BaseModel):
+    rol: str  # moderator / member
+
+
+# ---------------------------------------------------------------------------
+# Projects + Departments
+# ---------------------------------------------------------------------------
+
+class DepartmentCreate(BaseModel):
+    ad: str
+    gereken_kisi: int = 1
+    beklentiler: Optional[str] = None
+    beceri_etiketleri: list[str] = []
+
+
+class DepartmentResponse(BaseModel):
+    id: int
+    project_id: int
+    ad: str
+    gereken_kisi: int
+    beklentiler: Optional[str] = None
+    beceri_etiketleri: Optional[list[str]] = None
+    dolu_sayisi: int = 0
+    model_config = {"from_attributes": True}
+
+
+class ProjectCreate(BaseModel):
+    ad: str
+    kisa_aciklama: Optional[str] = None
+    kategori: Optional[str] = None
+    sure: Optional[str] = None
+    seviye: Optional[str] = None
+    hedef: Optional[str] = None
+    haftalik_saat: Optional[int] = None
+    github_var: bool = False
+    pitch: Optional[str] = None
+    gereksinimler: Optional[str] = None
+    departments: list[DepartmentCreate] = []
+
+
+class ProjectUpdate(BaseModel):
+    ad: Optional[str] = None
+    kisa_aciklama: Optional[str] = None
+    kategori: Optional[str] = None
+    sure: Optional[str] = None
+    seviye: Optional[str] = None
+    hedef: Optional[str] = None
+    haftalik_saat: Optional[int] = None
+    github_var: Optional[bool] = None
+    pitch: Optional[str] = None
+    gereksinimler: Optional[str] = None
+    durum: Optional[str] = None
+
+
+class ProjectResponse(BaseModel):
+    id: int
+    group_id: int
+    owner_id: int
+    ad: str
+    kisa_aciklama: Optional[str] = None
+    kategori: Optional[str] = None
+    sure: Optional[str] = None
+    seviye: Optional[str] = None
+    hedef: Optional[str] = None
+    haftalik_saat: Optional[int] = None
+    github_var: bool
+    pitch: Optional[str] = None
+    gereksinimler: Optional[str] = None
+    durum: str
+    created_at: datetime
+    departments: list[DepartmentResponse] = []
+    group_ad: Optional[str] = None
+    owner_ad: Optional[str] = None
+    model_config = {"from_attributes": True}
+
+
+class DepartmentApplicationCreate(BaseModel):
+    mesaj: Optional[str] = None
+
+
+class DepartmentApplicationDecision(BaseModel):
+    durum: str  # kabul / red
+
+
+class DepartmentApplicationResponse(BaseModel):
+    id: int
+    department_id: int
+    applicant_id: int
+    mesaj: Optional[str] = None
+    durum: str
+    created_at: datetime
+    applicant: Optional[UserResponse] = None
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Group Messages
+# ---------------------------------------------------------------------------
+
+class GroupMessageResponse(BaseModel):
+    id: int
+    group_id: int
+    sender_id: int
+    icerik: str
+    created_at: datetime
+    edited_at: Optional[datetime] = None
+    sender: Optional[UserResponse] = None
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Discovery
+# ---------------------------------------------------------------------------
+
+class DiscoveryResponse(BaseModel):
+    groups: list[GroupResponse] = []
+    projects: list[ProjectResponse] = []

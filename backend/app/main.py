@@ -11,7 +11,7 @@ from app.auth_utils import get_current_user
 from app.database import get_db
 from app.limiter import limiter
 from app.models import User, UserRole
-from app.routers import auth, users, internships, applications, companies, cv, portfolios, certificates, diary, teams, career, badges, events, ai
+from app.routers import auth, users, internships, applications, companies, cv, portfolios, certificates, diary, teams, career, badges, events, ai, groups, projects, skills, discover, ws_chat
 
 app = FastAPI(
     title="InternovaYZ API",
@@ -45,6 +45,11 @@ app.include_router(career.router)
 app.include_router(badges.router)
 app.include_router(events.router)
 app.include_router(ai.router)
+app.include_router(groups.router)
+app.include_router(projects.router)
+app.include_router(skills.router)
+app.include_router(discover.router)
+app.include_router(ws_chat.router)
 
 
 @app.exception_handler(Exception)
