@@ -1,7 +1,9 @@
 # FastAPI uygulama giriş noktası
+import os
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.orm import Session
@@ -11,7 +13,7 @@ from app.auth_utils import get_current_user
 from app.database import get_db
 from app.limiter import limiter
 from app.models import User, UserRole
-from app.routers import auth, users, internships, applications, companies, cv, portfolios, certificates, diary, teams, career, badges, events, ai, groups, projects, skills, discover, ws_chat
+from app.routers import auth, users, internships, applications, companies, cv, portfolios, certificates, diary, teams, career, badges, events, ai, groups, projects, skills, discover, ws_chat, staj, evraklar
 
 app = FastAPI(
     title="InternovaYZ API",
@@ -50,6 +52,13 @@ app.include_router(projects.router)
 app.include_router(skills.router)
 app.include_router(discover.router)
 app.include_router(ws_chat.router)
+app.include_router(staj.router)
+app.include_router(evraklar.router)
+
+# Yüklenen dosyaları sunmak için statik mount (evrak PDF'leri vb.)
+UPLOADS_DIR = os.getenv("UPLOADS_DIR", os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads"))
+os.makedirs(os.path.join(UPLOADS_DIR, "evraklar"), exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
 
 @app.exception_handler(Exception)

@@ -30,9 +30,28 @@ class InternshipStatus(str, enum.Enum):
 
 
 class ApplicationStatus(str, enum.Enum):
+    """5-aşamalı başvuru durumu (Faz 2 #8 timeline ile).
+
+    Akış: bekleyen → inceleniyor → mulakat → kabul | red
+    """
     bekleyen = "bekleyen"
+    inceleniyor = "inceleniyor"
+    mulakat = "mulakat"
     kabul = "kabul"
     red = "red"
+
+
+# Durum sırası — timeline UI ve geçiş validasyonu için
+APPLICATION_DURUM_SIRASI = ["bekleyen", "inceleniyor", "mulakat", "kabul", "red"]
+
+# Geçerli geçişler — kabul/red terminal
+APPLICATION_GECERLI_GECISLER = {
+    "bekleyen":    ["inceleniyor", "mulakat", "kabul", "red"],
+    "inceleniyor": ["mulakat", "kabul", "red"],
+    "mulakat":     ["kabul", "red"],
+    "kabul":       [],  # terminal
+    "red":         [],  # terminal
+}
 
 
 class LLMProcessingStatus(str, enum.Enum):
@@ -145,14 +164,19 @@ class Application(Base):
     id = Column(Integer, primary_key=True, index=True)
     student_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     internship_id = Column(Integer, ForeignKey("internships.id", ondelete="CASCADE"), nullable=False, index=True)
-    durum = Column(Enum(ApplicationStatus), default=ApplicationStatus.bekleyen, nullable=False)
+    # 5-aşamalı durum (bekleyen/inceleniyor/mulakat/kabul/red) — String tutulur, kodda validate edilir
+    durum = Column(String(20), default="bekleyen", nullable=False)
     basvuru_tarihi = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     karar_tarihi = Column(DateTime(timezone=True))
     on_yazi = Column(Text)
+    tamamlandi = Column(Boolean, default=False, nullable=False)  # staj bitti mi (alumni track)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     student = relationship("User", back_populates="applications", foreign_keys=[student_id])
     internship = relationship("Internship", back_populates="applications")
+    durum_gecmis = relationship("ApplicationDurumGecmis", back_populates="application",
+                                cascade="all, delete-orphan",
+                                order_by="ApplicationDurumGecmis.created_at")
 
 
 # ---------------------------------------------------------------------------
@@ -566,3 +590,86 @@ class GroupMessage(Base):
 
     group = relationship("Group", back_populates="messages")
     sender = relationship("User")
+
+
+# ---------------------------------------------------------------------------
+# staj_deneyimleri — anonim staj deneyim paylaşımı (Faz 1 #5)
+# ---------------------------------------------------------------------------
+
+class StajDeneyim(Base):
+    __tablename__ = "staj_deneyimleri"
+    __table_args__ = (
+        UniqueConstraint("company_id", "paylasan_id", "donem", name="uq_deneyim_per_donem"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    # paylasan_id DB'de saklanır (audit + silme yetkisi), API'de döndürülmez
+    paylasan_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id", ondelete="SET NULL"), nullable=True)
+
+    bolum_kodu          = Column(String(50))
+    donem               = Column(String(40))      # "2026-Yaz" gibi
+    calistigi_departman = Column(String(120))
+    genel_yorum         = Column(Text, nullable=False)
+    ogrendigi_teknolojiler = Column(JSONB)         # list[str]
+    puan                = Column(Integer)          # 1-5
+    tavsiye_eder_mi     = Column(Boolean)
+    onay_durumu         = Column(String(20), default="onayli", nullable=False)
+    created_at          = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    company    = relationship("User", foreign_keys=[company_id])
+    paylasan   = relationship("User", foreign_keys=[paylasan_id])
+    application = relationship("Application", foreign_keys=[application_id])
+
+
+# ---------------------------------------------------------------------------
+# application_durum_gecmis — başvuru durum geçişlerinin audit trail'i (Faz 2 #8)
+# ---------------------------------------------------------------------------
+
+class ApplicationDurumGecmis(Base):
+    __tablename__ = "application_durum_gecmis"
+
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id", ondelete="CASCADE"),
+                            nullable=False, index=True)
+    eski_durum  = Column(String(20))
+    yeni_durum  = Column(String(20), nullable=False)
+    degistiren_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    not_ = Column("not_", Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    application = relationship("Application", back_populates="durum_gecmis")
+    degistiren  = relationship("User", foreign_keys=[degistiren_id])
+
+
+# ---------------------------------------------------------------------------
+# staj_evraklari — öğrenci-yüklenen, akademisyen-onaylanan dijital evrak
+# (Faz 3 #14)
+# ---------------------------------------------------------------------------
+
+class StajEvrak(Base):
+    __tablename__ = "staj_evraklari"
+
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id", ondelete="CASCADE"),
+                            nullable=False, index=True)
+    yukleyen_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+
+    ad = Column(String(200), nullable=False)
+    # kabul_mektubu | sigorta_bilgisi | is_yeri_degerlendirme |
+    # ogrenci_degerlendirme | staj_defteri | diger
+    tip = Column(String(40), default="diger", nullable=False)
+    dosya_url = Column(String(500))
+    dosya_adi = Column(String(200))
+
+    durum = Column(String(20), default="bekleyen", nullable=False)   # bekleyen | onayli | red
+    onaylayan_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
+    onay_notu = Column(Text)
+    onay_tarihi = Column(DateTime(timezone=True))
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    application = relationship("Application")
+    yukleyen    = relationship("User", foreign_keys=[yukleyen_id])
+    onaylayan   = relationship("User", foreign_keys=[onaylayan_id])

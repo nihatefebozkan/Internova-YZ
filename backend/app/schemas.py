@@ -160,7 +160,42 @@ class ApplicationCreate(BaseModel):
 
 
 class ApplicationDecision(BaseModel):
-    durum: ApplicationStatus  # kabul veya red
+    durum: ApplicationStatus              # 5 değerden biri
+    not_: Optional[str] = None            # şirketin isteğe bağlı notu (timeline'da görünür)
+
+
+class ApplicationBulkDecision(BaseModel):
+    application_ids: list[int]
+    durum: ApplicationStatus
+    not_: Optional[str] = None
+
+
+class ApplicationBulkResult(BaseModel):
+    basarili: list[int]
+    atlanan: list[dict]                   # [{id, sebep}]
+
+
+class AdaySiralamaItem(BaseModel):
+    application_id: int
+    student_id: int
+    ad_soyad: Optional[str] = None
+    bolum: Optional[str] = None
+    durum: str
+    uyum_yuzdesi: int                    # 0-100
+    en_guclu_kategori: Optional[str] = None
+    en_zayif_kategori: Optional[str] = None
+    basvuru_tarihi: Optional[datetime] = None
+
+
+class DurumGecmisItem(BaseModel):
+    id: int
+    eski_durum: Optional[str] = None
+    yeni_durum: str
+    not_: Optional[str] = None
+    created_at: datetime
+    degistiren_ad: Optional[str] = None   # frontend için anonim/şirket adı
+
+    model_config = {"from_attributes": True}
 
 
 class ApplicationResponse(BaseModel):
@@ -171,9 +206,11 @@ class ApplicationResponse(BaseModel):
     basvuru_tarihi: datetime
     karar_tarihi: Optional[datetime] = None
     on_yazi: Optional[str] = None
+    tamamlandi: bool = False
     created_at: datetime
     student: Optional[UserResponse] = None
     internship: Optional[InternshipResponse] = None
+    durum_gecmis: list[DurumGecmisItem] = []
 
     model_config = {"from_attributes": True}
 
@@ -647,3 +684,319 @@ class GroupMessageResponse(BaseModel):
 class DiscoveryResponse(BaseModel):
     groups: list[GroupResponse] = []
     projects: list[ProjectResponse] = []
+
+
+# ---------------------------------------------------------------------------
+# Staj — Hazırlık Skoru (Faz 1 #1)
+# ---------------------------------------------------------------------------
+
+class HazirlikAltSkor(BaseModel):
+    kategori: str
+    skor: int
+    max: int
+    ikon: Optional[str] = None
+
+
+class HazirlikOnerisi(BaseModel):
+    baslik: str
+    puan: int
+    yol: Optional[str] = None   # frontend route
+
+
+class HazirlikSkoruResponse(BaseModel):
+    toplam_skor: int             # 0-100
+    seviye: str                  # hazir / iyi_yolda / gelisiyor / baslangic
+    mesaj: str
+    alt_skorlar: list[HazirlikAltSkor]
+    oneriler: list[HazirlikOnerisi]
+
+
+# ---------------------------------------------------------------------------
+# Staj — Sektör & Alan Keşfi (Faz 1 #2)
+# ---------------------------------------------------------------------------
+
+class SektorOnerisi(BaseModel):
+    kod: str
+    ad: str
+    ikon: Optional[str] = None
+    uyum: int                 # 0-100
+    aciklama: Optional[str] = None
+    sonraki_adimlar: list[str] = []
+
+
+class SektorKesfiResponse(BaseModel):
+    yeterli_veri: bool
+    mesaj: str
+    kullanici_profili: Optional[dict] = None   # {kategori: 0-100}
+    en_guclu_alan: Optional[str] = None
+    en_zayif_alan: Optional[str] = None
+    sektor_onerileri: list[SektorOnerisi] = []
+    ai_yorum: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Staj — Kişisel Eksik Analizi (Faz 1 #3)
+# ---------------------------------------------------------------------------
+
+class GapItem(BaseModel):
+    kategori: str
+    hedef: int            # 0-100
+    mevcut: int           # 0-100
+    fark: int             # max(0, hedef-mevcut)
+    seviye: str           # tam | kismi | eksik
+
+
+class SomutAdim(BaseModel):
+    gap_kategori: str
+    adim: str
+    tahmini_sure: Optional[str] = None
+    puan_kazanci: Optional[int] = None
+
+
+class EksikAnaliziResponse(BaseModel):
+    internship_id: int
+    pozisyon: str
+    sirket_adi: Optional[str] = None
+    tamamlanma_yuzdesi: int            # 0-100
+    gap_analizi: list[GapItem] = []
+    en_buyuk_gaplar: list[str] = []
+    somut_adimlar: list[SomutAdim] = []
+    ai_yorum: Optional[str] = None
+    uyari: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Staj — Anonim Deneyim Paylaşımı (Faz 1 #5)
+# ---------------------------------------------------------------------------
+
+class StajDeneyimCreate(BaseModel):
+    company_id: int
+    donem: str                                  # "2026-Yaz"
+    calistigi_departman: Optional[str] = None
+    genel_yorum: str
+    ogrendigi_teknolojiler: list[str] = []
+    puan: Optional[int] = None                  # 1-5
+    tavsiye_eder_mi: Optional[bool] = None
+
+
+class StajDeneyimAnonim(BaseModel):
+    """API'de döndürülen anonim görünüm — paylasan_id YOK."""
+    id: int
+    company_id: int
+    bolum_kodu: Optional[str] = None
+    donem: Optional[str] = None
+    calistigi_departman: Optional[str] = None
+    genel_yorum: str
+    ogrendigi_teknolojiler: Optional[list] = None
+    puan: Optional[int] = None
+    tavsiye_eder_mi: Optional[bool] = None
+    created_at: datetime
+    benim_mi: bool = False                      # frontend silme butonu için
+
+    model_config = {"from_attributes": True}
+
+
+class StajDeneyimStats(BaseModel):
+    company_id: int
+    toplam_paylasim: int
+    ortalama_puan: Optional[float] = None        # 0.0-5.0
+    tavsiye_yuzdesi: Optional[int] = None        # 0-100
+    en_cok_teknoloji: list[str] = []             # frekansa göre top 5
+
+
+# ---------------------------------------------------------------------------
+# Staj — AI Kapak Mektubu (Faz 2 #7)
+# ---------------------------------------------------------------------------
+
+class KapakMektubuRequest(BaseModel):
+    internship_id: int
+    ton: Optional[str] = "denge"           # resmi | samimi | denge
+    uzunluk: Optional[str] = "orta"        # kisa | orta | uzun
+    ekstra_yonerge: Optional[str] = None   # "şu projemden bahset" gibi serbest input
+
+
+class KapakMektubuResponse(BaseModel):
+    basarili: bool
+    metin: Optional[str] = None
+    kullanilan_model: Optional[str] = None    # gemini / groq / openai
+    kelime_sayisi: int = 0
+    hata: Optional[str] = None
+    uyarilar: list[str] = []
+
+
+# ---------------------------------------------------------------------------
+# Staj — Mülakat Hazırlık Checklist (Faz 2 #9)
+# ---------------------------------------------------------------------------
+
+class MulakatMaddesi(BaseModel):
+    baslik: str
+    neden: Optional[str] = None
+
+
+class MulakatKategorisi(BaseModel):
+    ad: str
+    ikon: Optional[str] = None
+    maddeler: list[MulakatMaddesi] = []
+
+
+class MulakatHazirligiResponse(BaseModel):
+    basarili: bool
+    pozisyon: Optional[str] = None
+    sirket_adi: Optional[str] = None
+    kategoriler: list[MulakatKategorisi] = []
+    genel_tavsiye: Optional[str] = None
+    kullanilan_model: Optional[str] = None
+    hata: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Staj — Haftalık Öğrenme Günlüğü (Faz 3 #12)
+# ---------------------------------------------------------------------------
+
+class HaftalikGirisItem(BaseModel):
+    id: int
+    tarih: Optional[str] = None
+    ham_metin: str = ""
+    akademik_metin: str = ""
+    llm_isleme_durumu: str
+    onaylandi: bool = False
+
+
+class HaftalikItem(BaseModel):
+    yil_hafta: str                  # "2026-W22"
+    baslangic: str                  # "2026-05-25"
+    bitis: str                      # "2026-05-31"
+    giris_sayisi: int
+    girisler: list[HaftalikGirisItem] = []
+    ana_konular: list[str] = []
+    ozet: Optional[str] = None
+    ai_basarili: bool = False
+    ai_model: Optional[str] = None
+
+
+class HaftalikGunlukResponse(BaseModel):
+    application_id: int
+    internship_id: int
+    pozisyon: Optional[str] = None
+    sirket_adi: Optional[str] = None
+    toplam_giris: int = 0
+    toplam_hafta: int = 0
+    haftalar: list[HaftalikItem] = []
+
+
+# ---------------------------------------------------------------------------
+# Staj — Otomatik Beceri Ekstraksiyonu (Faz 3 #13)
+# ---------------------------------------------------------------------------
+
+class BeceriOnerisi(BaseModel):
+    ad: str
+    guven: float                          # 0-1
+    kategori: Optional[str] = None        # dil/framework/veritabanı/araç/kavram/bulut/diğer
+    kaynak_tarihler: list[str] = []
+    zaten_var: bool = False
+
+
+class BeceriEkstraksiyonResponse(BaseModel):
+    basarili: bool
+    kullanilan_model: Optional[str] = None
+    toplam_giris: int = 0
+    onerilen_beceriler: list[BeceriOnerisi] = []
+    hata: Optional[str] = None
+
+
+class BeceriEklemeRequest(BaseModel):
+    beceriler: list[str]                  # Eklenecek beceri adları
+
+
+class BeceriEklemeResponse(BaseModel):
+    eklenenler: list[str]
+    atlananlar: list[str]                 # zaten var olanlar
+    toplam_beceri_sayisi: int             # CV'de toplam beceri sayısı
+
+
+# ---------------------------------------------------------------------------
+# Staj — Asistan Staj Modu (Faz 3 #15)
+# ---------------------------------------------------------------------------
+
+class StajAsistaniRequest(BaseModel):
+    soru: str
+    application_id: int                   # Hangi başvuru bağlamında soruyor
+
+
+class StajAsistaniResponse(BaseModel):
+    basarili: bool
+    yanit: Optional[str] = None
+    kullanilan_model: Optional[str] = None
+    asama: Optional[str] = None           # bekleyen/inceleniyor/mulakat/kabul/red
+    hata: Optional[str] = None
+
+
+class StajAsistaniBaglam(BaseModel):
+    """Frontend için aktif başvuru özeti — staj modu seçicide gösterilir."""
+    application_id: int
+    internship_id: int
+    pozisyon: Optional[str] = None
+    sirket_adi: Optional[str] = None
+    durum: str
+    asama_aciklama: Optional[str] = None
+    hizli_sorular: list[str] = []
+
+
+# ---------------------------------------------------------------------------
+# Staj — Şirket Önanalizi (Faz 3 #11)
+# ---------------------------------------------------------------------------
+
+class SirketOnaniziResponse(BaseModel):
+    basarili: bool
+    company_id: int
+    sirket_adi: Optional[str] = None
+
+    # Meta — şeffaflık için: veri kaynağı boyutu
+    ogrenci_sayisi: int = 0                  # tamamlanmış staj sayısı
+    deneyim_sayisi: int = 0                  # anonim deneyim paylaşımı sayısı
+    ortalama_puan: Optional[float] = None    # 0-5
+    tavsiye_yuzdesi: Optional[int] = None    # 0-100
+
+    # LLM çıktısı
+    muhtemel_teknolojiler: list[str] = []
+    yaygin_isler: list[str] = []
+    is_kulturu_ipuclari: list[str] = []
+    uyari_noktalari: list[str] = []
+    ozet: Optional[str] = None
+
+    kullanilan_model: Optional[str] = None
+    hata: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
+# Staj — Dijital Evrak Akışı (Faz 3 #14)
+# ---------------------------------------------------------------------------
+
+class StajEvrakResponse(BaseModel):
+    id: int
+    application_id: int
+    yukleyen_id: Optional[int] = None
+    yukleyen_ad: Optional[str] = None
+    ad: str
+    tip: str
+    dosya_url: Optional[str] = None
+    dosya_adi: Optional[str] = None
+    durum: str
+    onaylayan_id: Optional[int] = None
+    onaylayan_ad: Optional[str] = None
+    onay_notu: Optional[str] = None
+    onay_tarihi: Optional[datetime] = None
+    created_at: datetime
+
+    # Bağlam (frontend'in API çağrısı azalsın diye)
+    pozisyon: Optional[str] = None
+    sirket_adi: Optional[str] = None
+    ogrenci_ad: Optional[str] = None
+    ogrenci_bolum: Optional[str] = None
+
+    model_config = {"from_attributes": True}
+
+
+class EvrakOnayRequest(BaseModel):
+    durum: str                        # onayli | red
+    onay_notu: Optional[str] = None

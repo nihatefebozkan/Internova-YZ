@@ -4,11 +4,51 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 const DURUM_RENK = {
-  bekleyen: 'bg-amber-50 text-amber-600 border-amber-200',
-  kabul:    'bg-emerald-50 text-emerald-600 border-emerald-200',
-  red:      'bg-red-50 text-red-600 border-red-200',
+  bekleyen:    'bg-amber-50 text-amber-700 border-amber-200',
+  inceleniyor: 'bg-blue-50 text-blue-700 border-blue-200',
+  mulakat:     'bg-purple-50 text-purple-700 border-purple-200',
+  kabul:       'bg-emerald-50 text-emerald-700 border-emerald-200',
+  red:         'bg-red-50 text-red-700 border-red-200',
 };
-const DURUM_LABEL = { bekleyen: 'İnceleniyor', kabul: 'Kabul', red: 'Reddedildi' };
+const DURUM_LABEL = {
+  bekleyen: 'Bekleyen', inceleniyor: 'İnceleniyor', mulakat: 'Mülakat',
+  kabul: 'Kabul', red: 'Reddedildi',
+};
+
+// 5-aşamalı timeline sıralaması — kabul ve red terminal alternatifler
+const TIMELINE_ADIMLARI = [
+  { k: 'bekleyen',    l: 'Başvuru',     ikon: '📥' },
+  { k: 'inceleniyor', l: 'İnceleniyor', ikon: '🔍' },
+  { k: 'mulakat',     l: 'Mülakat',     ikon: '🤝' },
+  { k: 'sonuc',       l: 'Sonuç',       ikon: '🎯' },   // kabul veya red
+];
+
+function MiniTimeline({ durum }) {
+  // hangi adıma kadar gelindi
+  const aktifIdx =
+    durum === 'bekleyen'    ? 0 :
+    durum === 'inceleniyor' ? 1 :
+    durum === 'mulakat'     ? 2 :
+    durum === 'kabul' || durum === 'red' ? 3 : 0;
+  const reddedildi = durum === 'red';
+
+  return (
+    <div className="flex items-center gap-1 mt-2">
+      {TIMELINE_ADIMLARI.map((adim, i) => {
+        const aktif = i <= aktifIdx;
+        const sonuc = i === 3 && (durum === 'kabul' || durum === 'red');
+        const renk = sonuc
+          ? (reddedildi ? 'bg-red-500' : 'bg-emerald-500')
+          : aktif ? 'bg-blue-500' : 'bg-gray-200';
+        return (
+          <div key={adim.k} className="flex-1 flex items-center gap-1">
+            <div className={`h-1.5 flex-1 rounded-full transition-all ${renk}`} title={adim.l} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function StudentDashboard() {
   const { user } = useAuth();
@@ -17,9 +57,11 @@ function StudentDashboard() {
   const [applications, setApplications] = useState([]);
   const [isExpanded,   setIsExpanded]   = useState(false);
   const [loading,      setLoading]      = useState(true);
+  const [hazirlik,     setHazirlik]     = useState(null);
 
   useEffect(() => {
     api.get('/applications/me').then(res => setApplications(res.data)).catch(() => {}).finally(() => setLoading(false));
+    api.get('/staj/hazirlik-skoru').then(res => setHazirlik(res.data)).catch(() => {});
   }, []);
 
   const visible = isExpanded ? applications : applications.slice(0, 2);
@@ -31,10 +73,11 @@ function StudentDashboard() {
 
   // Hızlı işlemler — boş kalacaklar disabled
   const hizliIslemler = [
+    { text: 'Staj Hazırlık',          icon: '🎯', route: '/staj/hazirlik' },
     { text: 'Staj İlanlarını İncele', icon: '🔍', route: '/internships' },
     { text: 'Günlük Rapor Ekle',      icon: '📄', route: '/internship-book' },
     { text: "CV'mi Düzenle",          icon: '📝', route: '/profile' },
-    { text: 'Hedef Şirket Yol Haritası', icon: '🎯', route: '/career-map' },
+    { text: 'Hedef Şirket Yol Haritası', icon: '🗺', route: '/career-map' },
     { text: 'Gruplar & Takımlar',     icon: '👥', route: '/groups' },
     { text: 'Kariyer Asistanı',       icon: '🤖', route: '/career-assistant' },
   ];
@@ -64,6 +107,37 @@ function StudentDashboard() {
           <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Hoş Geldin, {ad || user?.email}!</h2>
           <p className="text-sm text-gray-500 mt-1">Staj başvurularını ve ilerlemeni buradan takip edebilirsin</p>
         </div>
+
+        {/* HAZIRLIK SKORU BANNER */}
+        {hazirlik && (
+          <div onClick={() => navigate('/staj/hazirlik')}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center gap-5">
+            {/* Mini progress ring */}
+            <div className="relative flex-shrink-0">
+              <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
+                <circle cx="40" cy="40" r="34" className="stroke-white/20" strokeWidth="8" fill="none" />
+                <circle cx="40" cy="40" r="34" className="stroke-white" strokeWidth="8" fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(hazirlik.toplam_skor / 100) * (2 * Math.PI * 34)} ${2 * Math.PI * 34}`} />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-extrabold leading-none">{hazirlik.toplam_skor}</span>
+                <span className="text-[8px] opacity-70 font-bold">/100</span>
+              </div>
+            </div>
+            {/* Mesaj */}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-extrabold mb-0.5">🎯 Staj Hazırlığın</h3>
+              <p className="text-sm opacity-90 line-clamp-2">{hazirlik.mesaj}</p>
+              {hazirlik.oneriler?.[0] && (
+                <p className="text-[11px] opacity-70 mt-1.5">
+                  💡 İlk öneri: <span className="font-bold">{hazirlik.oneriler[0].baslik}</span> (+{hazirlik.oneriler[0].puan} puan)
+                </p>
+              )}
+            </div>
+            <span className="text-2xl flex-shrink-0">→</span>
+          </div>
+        )}
 
         {/* İSTATİSTİK KARTLARI */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -110,20 +184,25 @@ function StudentDashboard() {
               <>
                 <div className="flex flex-col gap-3 mt-2">
                   {visible.map(app => (
-                    <div key={app.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-white hover:shadow-sm transition-all">
-                      <div className="flex items-center gap-4">
-                        <span className="text-xl p-2.5 bg-blue-50 text-blue-600 rounded-xl">💼</span>
-                        <div>
-                          <h4 className="text-sm font-bold text-gray-900">{app.internship?.pozisyon || 'Staj'}</h4>
-                          <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
-                            <span>{app.internship?.company?.ad || '—'}</span>
-                            {app.basvuru_tarihi && <><span>•</span><span>{new Date(app.basvuru_tarihi).toLocaleDateString('tr-TR')}</span></>}
+                    <div key={app.id}
+                      onClick={() => app.internship_id && navigate(`/internships/${app.internship_id}`)}
+                      className="p-4 rounded-xl border border-gray-100 bg-white hover:shadow-sm cursor-pointer transition-all">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-4 min-w-0">
+                          <span className="text-xl p-2.5 bg-blue-50 text-blue-600 rounded-xl flex-shrink-0">💼</span>
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-bold text-gray-900 truncate">{app.internship?.pozisyon || 'Staj'}</h4>
+                            <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
+                              <span className="truncate">{app.internship?.company?.ad || '—'}</span>
+                              {app.basvuru_tarihi && <><span>•</span><span className="whitespace-nowrap">{new Date(app.basvuru_tarihi).toLocaleDateString('tr-TR')}</span></>}
+                            </div>
                           </div>
                         </div>
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full border whitespace-nowrap flex-shrink-0 ${DURUM_RENK[app.durum] || 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+                          {DURUM_LABEL[app.durum] || app.durum}
+                        </span>
                       </div>
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full border ${DURUM_RENK[app.durum] || 'bg-gray-50 text-gray-500 border-gray-100'}`}>
-                        {DURUM_LABEL[app.durum] || app.durum}
-                      </span>
+                      <MiniTimeline durum={app.durum} />
                     </div>
                   ))}
                 </div>

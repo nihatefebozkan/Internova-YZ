@@ -22,6 +22,7 @@ import AcademicDashboard from './pages/AcademicDashboard';
 import CareerMap from './pages/CareerMap';
 import Badges from './pages/Badges';
 import InternshipBook from './pages/InternshipBook';
+import StajHazirlik from './pages/StajHazirlik';
 // Portfolio sayfası kaldırıldı — tüm fonksiyonu ProfilePage karşılıyor
 import Groups from './pages/Groups';
 import GroupCreate from './pages/Groups/Create';
@@ -59,6 +60,7 @@ function AppRoutes() {
           <Route path="/career-map" element={<ProtectedRoute><CareerMap /></ProtectedRoute>} />
           <Route path="/badges" element={<ProtectedRoute><Badges /></ProtectedRoute>} />
           <Route path="/internship-book" element={<ProtectedRoute><InternshipBook /></ProtectedRoute>} />
+          <Route path="/staj/hazirlik" element={<ProtectedRoute><StajHazirlik /></ProtectedRoute>} />
           <Route path="/team-matcher" element={<Navigate to="/groups" replace />} />
           <Route path="/career-assistant" element={<ProtectedRoute><CareerAssistant /></ProtectedRoute>} />
 
