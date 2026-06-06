@@ -125,11 +125,11 @@ export default function CompanyDashboard() {
   const [filtre, setFiltre] = useState('hepsi');           // hepsi | bekleyen | inceleniyor | mulakat | kabul | red
 
   useEffect(() => {
-    api.get('/internships', { params: { durum: 'aktif', limit: 50 } })
+    // Şirketin TÜM ilanları (taslak/aktif/kapalı hepsi)
+    api.get('/internships/me')
       .then(res => {
-        const my = res.data.filter(i => i.company_id === user?.id);
-        setInternships(my);
-        if (my.length > 0) setSelectedId(my[0].id);
+        setInternships(res.data);
+        if (res.data.length > 0) setSelectedId(res.data[0].id);
       })
       .finally(() => setLoading(false));
     api.get('/career/bolumler').then(res => setBolumler(res.data)).catch(() => {});
@@ -270,10 +270,16 @@ export default function CompanyDashboard() {
             <span className="text-xs text-gray-400 font-medium">Staj İlanı & Başvuru Yönetimi</span>
           </div>
         </div>
-        <button onClick={() => setShowForm(!showForm)}
-          className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl shadow-sm transition-all">
-          {showForm ? '✕ İptal' : '+ Yeni İlan'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate('/internships')}
+            className="text-xs font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 px-3 py-2 rounded-xl transition-all">
+            🔍 Tüm İlanlar
+          </button>
+          <button onClick={() => setShowForm(!showForm)}
+            className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl shadow-sm transition-all">
+            {showForm ? '✕ İptal' : '+ Yeni İlan'}
+          </button>
+        </div>
       </header>
 
       <main className="max-w-[1280px] mx-auto p-6 lg:p-8 flex flex-col gap-6">

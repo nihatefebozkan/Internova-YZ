@@ -1,23 +1,33 @@
 // Staj İlanları — modern Tailwind, arama + filtre + zengin kartlar
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-function IlanKarti({ ilan, navigate }) {
+function IlanKarti({ ilan, navigate, currentUserId }) {
   const skor = ilan.beceri_profili
     ? Math.round(
         Object.values(ilan.beceri_profili).reduce((a, b) => a + (Number(b) || 0), 0) /
           Math.max(Object.keys(ilan.beceri_profili).length, 1)
       )
     : null;
+  const benimIlanim = currentUserId && ilan.company_id === currentUserId;
 
   return (
     <div onClick={() => navigate(`/internships/${ilan.id}`)}
-      className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 cursor-pointer transition-all flex flex-col gap-3">
+      className={`bg-white p-5 rounded-2xl border shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col gap-3
+        ${benimIlanim ? 'border-blue-300 ring-1 ring-blue-100' : 'border-gray-100 hover:border-blue-200'}`}>
       {/* Başlık */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-snug">{ilan.pozisyon}</h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-base font-bold text-gray-900 line-clamp-2 leading-snug">{ilan.pozisyon}</h3>
+            {benimIlanim && (
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full whitespace-nowrap">
+                ⭐ Senin İlanın
+              </span>
+            )}
+          </div>
           {ilan.company?.ad && (
             <p className="text-xs text-gray-400 mt-1 truncate">🏢 {ilan.company.ad}</p>
           )}
@@ -72,6 +82,11 @@ function IlanKarti({ ilan, navigate }) {
 
 export default function InternshipsPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const dashboardYolu =
+    user?.role === 'company' ? '/company-dashboard'
+    : user?.role === 'teacher' ? '/academic-dashboard'
+    : '/student-dashboard';
   const [ilanlar, setIlanlar] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -100,13 +115,17 @@ export default function InternshipsPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/staj/hazirlik')}
-            className="text-xs font-bold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all">
-            🎯 Hazırlığım
-          </button>
-          <button onClick={() => navigate('/student-dashboard')}
+          {user?.role === 'student' && (
+            <button onClick={() => navigate('/staj/hazirlik')}
+              className="text-xs font-bold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-all">
+              🎯 Hazırlığım
+            </button>
+          )}
+          <button onClick={() => navigate(dashboardYolu)}
             className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl shadow-sm transition-all">
-            Dashboard
+            {user?.role === 'company' ? 'Şirket Paneli'
+             : user?.role === 'teacher' ? 'Akademisyen Paneli'
+             : 'Dashboard'}
           </button>
         </div>
       </header>
@@ -168,7 +187,7 @@ export default function InternshipsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {ilanlar.map(i => <IlanKarti key={i.id} ilan={i} navigate={navigate} />)}
+              {ilanlar.map(i => <IlanKarti key={i.id} ilan={i} navigate={navigate} currentUserId={user?.id} />)}
             </div>
           )}
         </section>

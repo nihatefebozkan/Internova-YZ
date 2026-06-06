@@ -30,6 +30,27 @@ def list_internships(
     return q.order_by(Internship.created_at.desc()).offset(skip).limit(limit).all()
 
 
+@router.get("/me", response_model=list[InternshipResponse])
+def my_internships(
+    durum: InternshipStatus | None = Query(default=None, description="Filtre — boşsa tüm durumlar"),
+    current_user: User = Depends(require_role(UserRole.company)),
+    db: Session = Depends(get_db),
+):
+    """Şirket kendi ilanlarını listeler — durum filtresi opsiyonel.
+
+    `/internships` herkese açık ve sadece `aktif` döner; bu endpoint ise şirketin
+    TÜM ilanlarını (taslak/aktif/kapalı) görmesini sağlar.
+    """
+    q = (
+        db.query(Internship)
+        .options(selectinload(Internship.company))
+        .filter(Internship.company_id == current_user.id)
+    )
+    if durum is not None:
+        q = q.filter(Internship.durum == durum)
+    return q.order_by(Internship.created_at.desc()).all()
+
+
 @router.post("", response_model=InternshipResponse, status_code=201)
 def create_internship(
     body: InternshipCreate,
