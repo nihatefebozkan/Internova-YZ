@@ -1,5 +1,4 @@
-# Test verilerini veritabanına yükler: 3 kullanıcı, 2 staj ilanı,
-# 3 rozet ve 1 etkinlik.
+# Test verilerini veritabanına yükler: 3 kullanıcı, 2 staj ilanı.
 
 import sys
 import os
@@ -7,13 +6,10 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import bcrypt
-from datetime import date, datetime, timezone
+from datetime import date
 
 from app.database import SessionLocal
 from app.models import (
-    Badge,
-    Event,
-    EventCategory,
     Internship,
     InternshipStatus,
     User,
@@ -93,51 +89,10 @@ def seed():
         )
         db.add_all([ilan1, ilan2])
 
-        # --- Rozetler -----------------------------------------------------------
-        rozet1 = Badge(
-            ad="İlk Adım",
-            aciklama="Platforma ilk kez giriş yapan kullanıcılara verilir.",
-            ikon_url="/static/badges/ilk_adim.png",
-            kategori="genel",
-            kazanma_kurali={"event": "first_login"},
-        )
-        rozet2 = Badge(
-            ad="Etkinlik Avcısı",
-            aciklama="En az 3 etkinliğe katılan kullanıcılara verilir.",
-            ikon_url="/static/badges/etkinlik_avcisi.png",
-            kategori="etkinlik",
-            kazanma_kurali={"event": "event_attendance", "threshold": 3},
-        )
-        rozet3 = Badge(
-            ad="Takım Oyuncusu",
-            aciklama="En az 1 proje takımına katılan kullanıcılara verilir.",
-            ikon_url="/static/badges/takim_oyuncusu.png",
-            kategori="takim",
-            kazanma_kurali={"event": "team_join", "threshold": 1},
-        )
-        db.add_all([rozet1, rozet2, rozet3])
-        db.flush()
-
-        # --- Etkinlik -----------------------------------------------------------
-        etkinlik = Event(
-            organizator_id=ogretmen.id,
-            baslik="Yapay Zeka ve Kariyer Paneli 2026",
-            aciklama="Sanayi temsilcileri ve akademisyenlerle YZ alanında kariyer fırsatları tartışılacak.",
-            kategori=EventCategory.panel,
-            baslangic_tarihi=datetime(2026, 6, 10, 14, 0, tzinfo=timezone.utc),
-            bitis_tarihi=datetime(2026, 6, 10, 17, 0, tzinfo=timezone.utc),
-            konum="BTÜ Konferans Salonu",
-            kapasite=150,
-            qr_kod="BTU-EVENT-2026-001",
-        )
-        db.add(etkinlik)
-
         db.commit()
         print("Seed tamamlandı:")
         print(f"  Kullanıcılar: öğrenci ({ogrenci.email}), öğretmen ({ogretmen.email}), şirket ({sirket.email})")
         print(f"  Staj ilanları: {ilan1.pozisyon}, {ilan2.pozisyon}")
-        print(f"  Rozetler: {rozet1.ad}, {rozet2.ad}, {rozet3.ad}")
-        print(f"  Etkinlik: {etkinlik.baslik}")
         print("\nTest şifresi (tüm hesaplar): Test1234!")
 
     except Exception as exc:

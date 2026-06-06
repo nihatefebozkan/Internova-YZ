@@ -60,14 +60,6 @@ class LLMProcessingStatus(str, enum.Enum):
     hata = "hata"
 
 
-class EventCategory(str, enum.Enum):
-    panel = "panel"
-    gezi = "gezi"
-    workshop = "workshop"
-    konferans = "konferans"
-    diger = "diger"
-
-
 class TeamStatus(str, enum.Enum):
     acik = "acik"
     dolu = "dolu"
@@ -111,9 +103,6 @@ class User(Base):
     certificates = relationship("Certificate", back_populates="student", cascade="all, delete-orphan")
     portfolios = relationship("Portfolio", back_populates="student", cascade="all, delete-orphan")
     diary_entries = relationship("DiaryEntry", back_populates="student", cascade="all, delete-orphan")
-    user_badges = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
-    organized_events = relationship("Event", back_populates="organizator", cascade="all, delete-orphan")
-    event_attendances = relationship("EventAttendee", back_populates="user", cascade="all, delete-orphan")
     led_teams = relationship("ProjectTeam", back_populates="lider", cascade="all, delete-orphan")
     team_memberships = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan")
     team_applications = relationship("TeamApplication", back_populates="applicant", cascade="all, delete-orphan")
@@ -269,84 +258,6 @@ class DiaryEntry(Base):
 
     student = relationship("User", back_populates="diary_entries")
     internship = relationship("Internship", back_populates="diary_entries")
-
-
-# ---------------------------------------------------------------------------
-# badges
-# ---------------------------------------------------------------------------
-
-class Badge(Base):
-    __tablename__ = "badges"
-
-    id = Column(Integer, primary_key=True, index=True)
-    ad = Column(String(200), unique=True, nullable=False)
-    aciklama = Column(Text)
-    ikon_url = Column(String(500))
-    kategori = Column(String(100))
-    kazanma_kurali = Column(JSONB)
-
-    user_badges = relationship("UserBadge", back_populates="badge", cascade="all, delete-orphan")
-
-
-# ---------------------------------------------------------------------------
-# user_badges
-# ---------------------------------------------------------------------------
-
-class UserBadge(Base):
-    __tablename__ = "user_badges"
-    __table_args__ = (
-        UniqueConstraint("user_id", "badge_id", name="uq_user_badge"),
-    )
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    badge_id = Column(Integer, ForeignKey("badges.id", ondelete="CASCADE"), nullable=False, index=True)
-    kazanma_tarihi = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-
-    user = relationship("User", back_populates="user_badges")
-    badge = relationship("Badge", back_populates="user_badges")
-
-
-# ---------------------------------------------------------------------------
-# events
-# ---------------------------------------------------------------------------
-
-class Event(Base):
-    __tablename__ = "events"
-
-    id = Column(Integer, primary_key=True, index=True)
-    organizator_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    baslik = Column(String(300), nullable=False)
-    aciklama = Column(Text)
-    kategori = Column(Enum(EventCategory), nullable=False)
-    baslangic_tarihi = Column(DateTime(timezone=True), nullable=False)
-    bitis_tarihi = Column(DateTime(timezone=True))
-    konum = Column(String(300))
-    kapasite = Column(Integer)
-    qr_kod = Column(String(500), unique=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-
-    organizator = relationship("User", back_populates="organized_events")
-    attendees = relationship("EventAttendee", back_populates="event", cascade="all, delete-orphan")
-
-
-# ---------------------------------------------------------------------------
-# event_attendees
-# ---------------------------------------------------------------------------
-
-class EventAttendee(Base):
-    __tablename__ = "event_attendees"
-    __table_args__ = (
-        UniqueConstraint("event_id", "user_id", name="uq_event_attendee"),
-    )
-
-    id = Column(Integer, primary_key=True, index=True)
-    event_id = Column(Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    katilim_zamani = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-
-    event = relationship("Event", back_populates="attendees")
-    user = relationship("User", back_populates="event_attendances")
 
 
 # ---------------------------------------------------------------------------

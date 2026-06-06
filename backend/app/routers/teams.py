@@ -9,7 +9,6 @@ from app.schemas import (
     TeamApplicationCreate, TeamApplicationDecision, TeamApplicationResponse,
     TeamCreate, TeamResponse, TeamUpdate,
 )
-from app.services.badge_service import rozet_kontrol_et
 from app.services.team_matcher import takim_eslesim
 
 router = APIRouter(prefix="/teams", tags=["teams"])
@@ -152,7 +151,6 @@ def decide_team_application(
     if body.durum == "kabul":
         uye = TeamMember(team_id=team_id, user_id=app.applicant_id, rol="üye")
         db.add(uye)
-        rozet_kontrol_et(app.applicant_id, "team_join", db)
     db.commit()
     db.refresh(app)
     return app

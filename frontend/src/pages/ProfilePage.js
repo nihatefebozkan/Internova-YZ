@@ -463,20 +463,6 @@ function ProfilePage() {
           {/* SAĞ PANEL */}
           <div className="lg:col-span-2 flex flex-col gap-6">
 
-            {/* Rozetler */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-              <div>
-                <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">🏆 Rozetler & Başarılar</h4>
-                <p className="text-[11px] text-gray-400 font-medium mt-0.5">Tamamlanan {certificates.filter(c=>c.dogrulanmis).length} doğrulanmış sertifika ile kazanıldı</p>
-                <div className="flex gap-2 mt-3">
-                  <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-xl text-[11px] font-bold flex items-center gap-1">🎓 Öğrenmeye Başladı</span>
-                  {certificates.filter(c=>c.dogrulanmis).length > 0 && (
-                    <span className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[11px] font-bold flex items-center gap-1">✅ Sertifika Sahibi</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
             {/* Sekmeler */}
             <div className="bg-gray-100/70 p-1 rounded-xl flex gap-1">
               {["Sertifikalar", "Projeler", "Yetenekler"].map(tab => (

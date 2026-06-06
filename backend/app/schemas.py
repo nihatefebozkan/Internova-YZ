@@ -391,64 +391,6 @@ class TeamApplicationResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Rozetler
-# ---------------------------------------------------------------------------
-
-class BadgeResponse(BaseModel):
-    id: int
-    ad: str
-    aciklama: Optional[str] = None
-    ikon_url: Optional[str] = None
-    kategori: Optional[str] = None
-
-    model_config = {"from_attributes": True}
-
-
-class UserBadgeResponse(BaseModel):
-    id: int
-    badge_id: int
-    kazanma_tarihi: datetime
-    badge: Optional[BadgeResponse] = None
-
-    model_config = {"from_attributes": True}
-
-
-# ---------------------------------------------------------------------------
-# Etkinlikler
-# ---------------------------------------------------------------------------
-
-class EventCreate(BaseModel):
-    baslik: str
-    aciklama: Optional[str] = None
-    kategori: str
-    baslangic_tarihi: datetime
-    bitis_tarihi: Optional[datetime] = None
-    konum: Optional[str] = None
-    kapasite: Optional[int] = None
-
-
-class EventResponse(BaseModel):
-    id: int
-    organizator_id: int
-    baslik: str
-    aciklama: Optional[str] = None
-    kategori: str
-    baslangic_tarihi: datetime
-    bitis_tarihi: Optional[datetime] = None
-    konum: Optional[str] = None
-    kapasite: Optional[int] = None
-    qr_kod: Optional[str] = None
-    created_at: datetime
-    organizator: Optional["UserResponse"] = None
-
-    model_config = {"from_attributes": True}
-
-
-class QRCheckinRequest(BaseModel):
-    qr_kod: str
-
-
-# ---------------------------------------------------------------------------
 # Şirket profili
 # ---------------------------------------------------------------------------
 

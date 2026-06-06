@@ -95,7 +95,6 @@ function StudentDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2 text-gray-500">
-          <button onClick={() => navigate('/badges')} className="p-2 hover:bg-gray-50 rounded-full transition-all cursor-pointer" title="Rozetler">🏅</button>
           <button onClick={() => navigate('/profile')} className="p-2 hover:bg-gray-50 rounded-full transition-all cursor-pointer" title="Profil">👤</button>
         </div>
       </header>
