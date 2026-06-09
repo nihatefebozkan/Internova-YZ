@@ -1,39 +1,151 @@
-BURSA TEKNİK ÜNİVERSİTESİ ZORUNLU STAJ YÖNETMELİĞİ
-
-MADDE 1 - AMAÇ VE KAPSAM
-Bu yönetmelik, Bursa Teknik Üniversitesi lisans ve ön lisans programlarında kayıtlı öğrencilerin zorunlu staj uygulamalarına ilişkin usul ve esasları düzenlemektedir. Staj, öğrencilerin teorik bilgilerini pratik iş deneyimiyle pekiştirmelerini amaçlamaktadır.
-
-MADDE 2 - STAJ SÜRESİ
-Staj süresi bölümlere göre değişmekle birlikte asgari 30 iş günüdür. Bilgisayar Mühendisliği bölümü için zorunlu staj süresi 40 iş günüdür. Staj, tatil dönemlerinde yapılabileceği gibi akademik yıl içinde de gerçekleştirilebilir. Bir akademik yılda en fazla iki ayrı iş yerinde staj yapılabilir.
-
-MADDE 3 - STAJ YERİ KOŞULLARI
-Staj yapılacak işyerinin en az 5 çalışanı bulunmalıdır. İşyeri, öğrencinin bölümüyle ilgili faaliyet göstermelidir. Yurt dışı stajlar da kabul edilmektedir. İşyerinin SGK bildirimi yapıyor olması zorunludur. Kamu kurumlarında staj yapılabilir.
-
-MADDE 4 - STAJ BAŞVURU SÜRECİ
-Öğrenci, staj yapacağı işyerinden kabul belgesi almalıdır. Staj başlangıcından en az 15 gün önce bölüm staj komisyonuna başvurulmalıdır. Staj Başvuru Formu, İşyeri Kabul Belgesi ve öğrenci belgesi teslim edilmelidir. Komisyon onayı olmadan başlanan stajlar geçersiz sayılır.
-
-MADDE 5 - STAJ DEFTERİ
-Staj defteri, öğrenci tarafından her iş günü düzenli olarak doldurulmalıdır. Defterde yapılan işler, öğrenilen konular ve gözlemler yer almalıdır. Staj defteri, işyeri yetkilisi ve danışman öğretim üyesi tarafından onaylanmalıdır. Staj defteri A4 formatında, en az 50 sayfa olmalıdır. El yazısı veya bilgisayar çıktısı kabul edilmektedir. Staj defterinin elektronik kopyası da sisteme yüklenmelidir.
-
-MADDE 6 - STAJ RAPORU
-Staj tamamlandıktan sonra 15 gün içinde staj raporu teslim edilmelidir. Rapor, en az 20 sayfa olmalı; giriş, yapılan çalışmalar, sonuç ve değerlendirme bölümlerini içermelidir. Rapor Türkçe yazılmalı, teknik İngilizce terimler kullanılabilir. İşyeri gizlilik kuralları kapsamında bilgiler raporda gizlenebilir.
-
-MADDE 7 - STAJ DEĞERLENDİRME
-Staj değerlendirmesi; staj defteri (40 puan), staj raporu (30 puan) ve işyeri değerlendirmesi (30 puan) üzerinden yapılır. Toplam 60 ve üzeri puan alan öğrenciler stajı başarıyla tamamlamış sayılır. Başarısız olan öğrenciler bir sonraki dönemde stajı tekrarlamak zorundadır.
-
-MADDE 8 - STAJ SİGORTASI
-Staj süresince öğrenciler iş kazası ve meslek hastalığı sigortasından yararlanır. Sigorta primleri üniversite tarafından karşılanır. 5510 sayılı Kanun kapsamında öğrenciler sigortalı sayılır.
-
-MADDE 9 - DEVAMSIZLIK VE İZİN
-Staj süresince 3 günü aşan mazeretli devamsızlık telafi edilmelidir. Mazeret belgesi (doktor raporu, resmi yazı vb.) bölüme sunulmalıdır. İşyeri tatilleri staj süresinden sayılmaz.
-
-MADDE 10 - YURT DIŞI STAJ
-Erasmus+ programı kapsamında yurt dışı staj yapılabilir. Yurt dışı staj için bölüm onayı ve uluslararası ofis başvurusu gereklidir. Yurt dışında yapılan stajlar için staj defteri İngilizce tutulabilir. Yurt dışı stajları, yurt içi staj yerine sayılabilir.
-
-MADDE 11 - ÖZEL DURUMLAR
-Engelli öğrenciler için özel düzenlemeler yapılabilir. Çift anadal öğrencileri her bölümün staj koşullarını ayrı ayrı yerine getirmek zorundadır. Yatay geçiş öğrencilerinin önceki üniversitedeki stajları denklik komisyonunca değerlendirilebilir.
-
-STAJ KOMİSYONU İLETİŞİM
-Bölüm Staj Koordinatörü: Her dönem bölüm web sitesinde güncellenmektedir.
-Başvuru E-posta: staj@btu.edu.tr
-Staj Takip Sistemi: staj.btu.edu.tr
+30 Mart 2016 Çarşamba Sayı: 2016/3/6
+YÖNERGE
+BURSA TEKNİK ÜNİVERSİTESİ
+STAJ YÖNERGESİ
+BİRİNCİ BÖLÜM
+Amaç, Kapsam, Dayanak ve Tanımlar
+Amaç ve kapsam
+MADDE 1 - (1) Bu yönergenin amacı, Bursa Teknik Üniversitesi programlarındaki staj derslerinin
+yürütülmesinde uyulması gereken ilkeleri belirlemektir.
+(2) Bu yönerge, öğrencilerin öğrenim süresince almakla yükümlü olduğu staj çalışmalarının temel ilkeleri
+ile planlama, uygulama ve değerlendirme kurallarını kapsar.
+(3) Akademik birimler, yönergede belirlenen ilkeler çerçevesinde kendi programlarındaki öğretimin
+özellikleri ve gereklerine göre "Lisans Öğretimi Staj Usul ve Esasları"nı ilgili kurullarında belirler.
+Dayanak
+MADDE 2 – (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) (1) Bu yönerge,
+17/06/2021 tarihli ve 31514 sayılı Resmi Gazetede yayımlanan "Yükseköğretimde Uygulamalı Eğitimler Çerçeve
+Yönetmeliği" ile "Bursa Teknik Üniversitesi Lisans Eğitim-Öğretim ve Sınav Yönetmeliği" ne dayanılarak
+hazırlanmıştır.
+Tanımlar
+MADDE 3 - (1) Bu yönergede geçen;
+a) Üniversite: Bursa Teknik Üniversitesi'ni,
+b) Senato: Üniversite Senatosu'nu
+c) (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) Staj: Yükseköğretim kurumlarında
+verilen ve programa özgü olarak belirlenmiş teorik ve uygulamalı dersler dışında, öğrencilerin öğretim
+programlarıyla kazandırılması öngörülen mesleki bilgi, beceri, tutum ve davranışlarını geliştirmeleri, sektörü
+tanımaları, iş hayatına uyum sağlamaları, tecrübe edinmeleri ve gerçek üretim ve hizmet ortamında yetişmeleri
+amacıyla işletmelerde yaptıkları mesleki çalışmayı
+d) (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) İsteğe Bağlı Staj: Öğrencinin, kayıtlı
+olduğu programın öğretim planında yer almamasına rağmen kendi ihtiyaçları ve isteği doğrultusunda yaptığı stajı
+ifade eder.
+İKİNCİ BÖLÜM
+Stajın Amacı
+Stajın amacı
+MADDE 4 - (1) Stajın amacı; öğrencilerin, öğrenim gördükleri programlar ile ilgili iş alanlarını
+tanımalarını, iş yerlerindeki faaliyetleri öğrenmelerini, eğitim ve öğretim yoluyla edindikleri bilgi ve becerileri
+uygulayarak deneyim kazanmalarını sağlamaktır.
+ÜÇÜNCÜ BÖLÜM
+Staj Dönemleri, Yerleri ve Devam Zorunluğu
+Staj dönemleri
+MADDE 5 - (Değişik:15/08/2024 tarih ve 2024-13-1 sayılı Senato Kararı) (1) Akademik birimler her
+bir stajın toplam süresini (30 iş gününden az, 90 iş gününden fazla olmamak üzere) ve staj yapılacak tarihleri
+programlarının özelliğine göre belirler.
+(2) (Mülga:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı)
+(3) İşyerlerinde resmi tatil günlerinde çalışma yapıldığı ilgili kurumdan alınacak bir yazı ile belgelenmesi
+halinde resmi tatil günleri de staj süresinden sayılabilir.
+(4) (Değişik:07/06/2022 tarih ve 2022-7/8) Stajların yarıyıl veya yaz tatiline rastlayan aylarda yapılması
+esastır. Yarıyıl bitişi olarak dikkate alınacak tarih ilgili yıl akademik takviminde belirtilen yarıyıl sonu (Final)
+sınavlarının bitiş tarihidir. Öğrencinin dersinin veya sınavının olduğu günlerde staj yaptırılamaz. Aşağıdaki
+durumlarda ilgili komisyonların uygun görüşü ve fakülte yönetim kurulunun onayı ile;
+(a) Mezuniyet durumunda olup bütün derslerini tamamlamış ancak sadece stajını henüz tamamlayamamış
+öğrenciler stajını herhangi bir ayda yapabilir,
+(b) Mezun olmak için bir veya birkaç dersi kalmış, kayıtlı olduğu derslerin ders zamanı ve sınav sürelerine
+denk gelmemek şartıyla staj, aynı süreli ve haftalık üç günden az olmamak şartıyla eğitim öğretim dönemi, yaz
+okulu ve genel sınav dönemlerinde yapılabilir.
+(5) (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) Staj yapan öğrencilere ödenecek
+ücretler hakkında 3308 sayılı Kanununun 25 inci maddesi uygulanır.
+(6) (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) İlgili programın dekanlıkları
+tarafından, staj yapan öğrenciler hakkında 5510 sayılı Kanunun 5 inci maddesinin birinci fıkrasının (b) bendi
+uyarınca iş kazası ve meslek hastalığı sigortası uygulanır. Bu öğrencilerden bakmakla yükümlü olunan kişi
+durumunda olmayanlar hakkında ayrıca genel sağlık sigortası hükümleri uygulanır. Bu fıkra kapsamında ödenecek
+primler 5510 sayılı Kanunun 87 nci maddesinin birinci fıkrasının (e) bendi uyarınca yükseköğretim kurumları
+tarafından karşılanır.
+(7) (Değişik:07/06/2022 tarih ve 2022-7/8 sayılı Senato Kararı) Bölüm staj komisyonunun uygun
+görüşü, ilgili fakülte yönetim kurulunun onayı ve bu yönergedeki usul ve esaslara uygun olmak kaydıyla öğrenci
+isteğe bağlı olarak veya öğrenim gördüğü program kapsamında belirlenen staj süresinden daha uzun süreli staj
+yapabilir. Bu kapsamda yapılan staj, mezuniyet kredisi hesabına dâhil edilmez. İsteğe bağlı staj eğitim öğretim
+süresi boyunca en fazla iki kez ve yaz dönemlerinde yapılabilir. Ancak BTÜ-İMEP kapsamında İMEP yarıyılı
+öncesi ve sonrası yapılan stajlarda isteğe bağlı staj kapsamında değerlendirilir. Bu kapsamdaki stajlar ders
+programının uygun olması ve haftada en az 3 iş gününden az olmamak üzere dönem içinde de yapılabilir. İlgili
+programın dekanlıkları tarafından, staj yapan öğrenciler hakkında 5510 sayılı Kanunun 5 inci maddesinin birinci
+fıkrasının (b) bendi uyarınca iş kazası ve meslek hastalığı sigortası uygulanır. Bu öğrencilerden bakmakla yükümlü
+olunan kişi durumunda olmayanlar hakkında ayrıca genel sağlık sigortası hükümleri uygulanır.
+(8) (Değişik:07/06/2022 tarih ve 2022-7/8 sayılı Senato Kararı) İsteğe bağlı stajlar için herhangi bir
+değerlendirme yapılmaz, harf notu verilmez ve transkriptte gösterilmez.
+(9) (Değişik:14/03/2024 tarih ve 2024-03-14 sayılı Senato Kararı) İsteğe bağlı staja yazılmasına
+rağmen devam etmeyecek olan öğrenciler, isteğe bağlı staj işlemlerini sonlandırmak için stajı bırakacağı tarihten
+en az 3 iş günü öncesinde ilgili Fakülte birimine dilekçe vererek sigorta işlemlerinin staja devam etmeyeceği ilk
+gün itibariyle sonlandırılmasını talep eder. Bu işlemlerden öğrenci sorumludur.
+(10) (Değişik:07/06/2022 tarih ve 2022-7/8 sayılı Senato Kararı) İsteğe bağlı staj işlemi başlatıp staj
+esnasında vazgeçen öğrenci isteğe bağlı staj hakkını kullanmış sayılır.
+(11) (Değişik:07/06/2022 tarih ve 2022-7/8 sayılı Senato Kararı) İsteğe bağlı staj işlemlerinde staj
+süreci başladıktan sonra firma değişikliği yapılmaz.
+Staj yapılabilecek yerler
+MADDE 6 - (1) Akademik birimler tarafından belirlenen şartları taşıyan yurt içinde veya yurt dışında,
+kamu veya özel sektöre ait işletmelerde staj yapabilirler. Staj yeri bulma sorumluluğu öğrenciye aittir.
+Staj devam zorunluğu
+MADDE 7 - (1) Staja devam zorunludur. Mazeretleri nedeniyle, stajına devam edemeyen öğrenciler eksik
+kalan gün sayısı kadar stajının telafisini yapmak zorundadır.
+DÖRDÜNCÜ BÖLÜM
+Staj Uygulama Esasları
+Staj uygulama esasları
+MADDE 8 - (Değişik:15/08/2024 tarih ve 2024-13-01 sayılı Senato Kararı) (1) Staj programları
+öğretim planlarında gösterilir ve Bologna Kriterleri doğrultusunda AKTS kredisi ile kredilendirilir. Staj dersi bir
+dönemde, 5 AKTS kredisi ve en az 30 iş günü olacak şekilde üçüncü sınıfın yaz döneminde planlanarak
+oluşturulur. AKTS kredileri program veya bölümün ders çizelgelerine eklenir ve öğrencilerin mezuniyet kredisi
+hesabına dahil edilir.
+(2) Öğrenciler stajlarına ancak, bedeli Üniversite tarafından ödenen iş kazası ve meslek hastalığı sigortası
+girişleri tamamlandıktan sonra başlayabilirler. Sigorta girişleri yapılmadan işletmede yapılan çalışmalar, staj
+süresinden sayılmaz ve bu süre içinde doğacak sorunlardan Üniversite sorumlu tutulamaz.
+(3) (Mülga:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı)
+(4) Yıl içinde yapılması zorunlu olan stajlar hariç, staj dersi öğrencinin alabileceği ders yükü dışında
+tutulur.
+(5) (Mülga:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı)
+(6) Staj dışında mezuniyet yükümlülüklerini yerine getirmiş öğrencilere staj dersi her dönem açılabilir.
+(7) Öğrenciler üst yarıyıldan ders alma kriterlerini sağlayıp sağlamadığına bakılmaksızın, varsa ön şartı
+yerine getirdikleri takdirde stajlarını yapabilirler.
+(8) Yurtdışında staj yapacak öğrenciler sigorta işlemlerinden kendileri sorumludur. Bu öğrencilere,
+yapacakları stajları için, Sigorta primi de dâhil olmak üzere, Üniversite tarafından herhangi bir ödeme yapılmaz.
+(9) Staj belgeleri, Türkçe hazırlanır. Ancak ilgili birim tarafından uygun görülen bir yabancı dilde de
+hazırlanabilir. Yabancı dilde sunulmuş belgelerin gerektiğinde onaylı tercümelerinin sağlanmasından öğrenci
+sorumludur.
+(10) Stajlarını tamamlamış öğrencilerin başarı durumları en geç stajı izleyen dönemin sonunda
+sonuçlandırılır.
+(11) Öğrenciler staj ile ilgili belgeleri belirlenen zamanda teslim etmek zorundadırlar.
+(12) Staj süresince öğrenciler ile işyeri arasında yürürlükteki mevzuata uygun olarak staj koşulları, izin,
+tarafların görev ve sorumlulukları, ödenecek ücret ve gerekli görülen diğer hususları da içeren bir sözleşme
+imzalanabilir. İşyeri ile öğrenci arasında doğabilecek ihtilaflarda Üniversite taraf gösterilemez.
+(13) Öğrenciler staj süresince Yükseköğretim Kurumları Öğrenci Disiplin Yönetmeliği hükümlerine, staj
+yaptığı kurumun çalışma ilkelerine, iş koşullarına, disiplin ve iş güvenliğine ilişkin kurallara ve yasal
+düzenlemelere uymak zorundadırlar.
+(14) Öğrenci mazeretsiz olarak stajı bırakması halinde, Üniversitenin uğrayacağı maddi zararları
+karşılamakla yükümlüdür.
+(15) Öğrenciler, işyerinde yapılan staj çalışmalarını günlük olarak rapor eder ve bu raporlar işveren
+tarafından onaylanır.
+BEŞİNCİ BÖLÜM
+Stajın İzlenmesi ve Değerlendirilmesi
+Stajın izlenmesi ve değerlendirilmesi
+MADDE 9 - (Değişik:04/08/2021 tarih ve 2021-06-05 sayılı Senato Kararı) (1) Akademik birimler
+tarafından oluşturulan staj komisyonları stajın amacına uygun olarak yürütülmesi için gerekli kontrolün yapılması,
+değerlendirilmesi ve sonuçlandırılması ile ilgili düzenlemeyi yapar.
+(2) Stajla ilgili her türlü belge sınav evrakı niteliğindedir.
+ALTINCI BÖLÜM
+Çeşitli ve Son Hükümler
+Yürürlükten kaldırılan Yönerge
+MADDE 10 - (1) Senatonun 19/03/2014 tarih ve 2014-06 sayılı toplantısında kabul edilen "Bursa Teknik
+Üniversitesi Doğa Bilimleri, Mimarlık ve Mühendislik Fakültesi Staj Yönergesi" yürürlükten kaldırılmıştır.
+Hüküm bulunmayan haller
+MADDE 11 - (1) Bu Yönergede hüküm bulunmayan hallerde ilgili diğer mevzuat hükümleri, Senato ve
+ilgili akademik birim kurul kararları uygulanır.
+Yürürlük
+MADDE 12 - (1)Bu Yönerge, Bursa Teknik Üniversitesi Senatosunun 30/03/2016 tarih ve SEN-2016/3/6
+nolu kararı ile kabul edilerek yürürlüğe girmiştir.
+Yürütme
+MADDE 13 - (1) Bu Yönerge Rektör tarafından yürütülür.
+Yönergede Değişiklik Yapan Senato Kararlarının
+Tarihi Sayısı
+1 04/08/2021 2021-6-5
+2 04/01/2022 2022-1-6
+3 07/06/2022 2022-7-8
+4 14/03/2024 2024-03-14
+5 15/08/2024 2024-13-1

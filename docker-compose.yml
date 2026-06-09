@@ -1,21 +1,4 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: internovayz_db
-    environment:
-      POSTGRES_USER: internova
-      POSTGRES_PASSWORD: internova
-      POSTGRES_DB: internova_yz
-    ports:
-      - "127.0.0.1:5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U internova -d internova_yz"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     container_name: internovayz_redis
@@ -34,10 +17,10 @@ services:
     ports:
       - "127.0.0.1:8002:8002"
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: >
       sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8002"
 
@@ -51,6 +34,3 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
-volumes:
-  postgres_data:
